@@ -1,7 +1,5 @@
 package simpledb.buffer;
 
-import java.util.HashMap;
-
 import simpledb.file.Block;
 
 /**
@@ -13,7 +11,7 @@ import simpledb.file.Block;
 public class ClockBufferMgr extends AbstractBufferMgr {
 
 	// The map of the memory buffers
-	protected HashMap<Integer, ClockBuffer> buffer;
+	protected ClockBuffer[] bufferpool;
 
 	// Location of the clock head
 	protected int clockHeadPosition = 0;
@@ -27,7 +25,11 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 	 */
 	public ClockBufferMgr(int numbuffs) {
 		super(numbuffs);
-		buffer = new HashMap<Integer, ClockBuffer>();
+		bufferpool = new ClockBuffer[numbuffs];
+		for (int i = 0; i < numbuffs; i++) {
+			bufferpool[i] = new ClockBuffer();
+		}
+		clockHeadPosition = 0;
 	}
 
 	/*
@@ -47,21 +49,27 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 	 */
 	@Override
 	protected Buffer chooseUnpinnedBuffer() {
-		// If there are buffer spaces left in memory
-		if (numAvailable < maxBufferCount) {
-			return new Buffer();
-		} else {
-			// Find a buffer to remove from memory
-			findBufferClockPolicy();
-			return new Buffer();
-		}
+		return findBufferClockPolicy();
 	}
 
 	/**
 	 * Finds a buffer to remove by clock policy and removes it from memory.
 	 */
-	protected synchronized void findBufferClockPolicy() {
-		// TODO Search and remove clock policy buffer code here
+	protected synchronized Buffer findBufferClockPolicy() {
+		for (int j = 0; j < 2; j++) {
+			for (int i = clockHeadPosition; i < bufferpool.length; i++) {
+				if (bufferpool[i].isPinned()) {
+				} else if (bufferpool[i].getRefBit()) {
+					bufferpool[i].setRefBit(false);
+				} else {
+					clockHeadPosition = i;
+					return bufferpool[i];
+				}
+			}
+			clockHeadPosition = 0;
+		}
+
+		return null;
 	}
 
 	/*
@@ -72,7 +80,13 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 	 */
 	@Override
 	protected Buffer findExistingBuffer(Block blk) {
-		return buffer.get(new Integer(blk.number()));
+		for (Buffer buff : bufferpool) {
+			Block b = buff.block();
+			if (b != null && b.equals(blk)) {
+				return buff;
+			}
+		}
+		return null;
 	}
 
 	/*
@@ -82,9 +96,9 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 	 */
 	@Override
 	protected synchronized void flushAll(int txnum) {
-		for (Integer block : buffer.keySet()) {
-			if (buffer.get(block).isModifiedBy(txnum)) {
-				buffer.get(block).flush();
+		for (Buffer buff : bufferpool) {
+			if (buff.isModifiedBy(txnum)) {
+				buff.flush();
 			}
 		}
 	}
@@ -99,18 +113,15 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 		Buffer buff = findExistingBuffer(blk);
 		if (buff == null) {
 			buff = chooseUnpinnedBuffer();
-			if (buff == null)
+			if (buff == null) {
 				return null;
+			}
 			buff.assignToBlock(blk);
 		}
-
 		if (!buff.isPinned()) {
 			numAvailable--;
 		}
 		buff.pin();
-		((ClockBuffer) buff).setRefBit(true);
-		clockHeadPosition = buff.block().number();
-
 		return buff;
 	}
 
@@ -126,13 +137,9 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 		if (buff == null) {
 			return null;
 		}
-
 		buff.assignToNew(filename, fmtr);
 		numAvailable--;
 		buff.pin();
-		((ClockBuffer) buff).setRefBit(true);
-		clockHeadPosition = buff.block().number();
-
 		return buff;
 	}
 
@@ -144,8 +151,6 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 	@Override
 	protected synchronized void unpin(Buffer buff) {
 		buff.unpin();
-		((ClockBuffer) buff).setRefBit(true);
-		clockHeadPosition = buff.block().number();
 		if (!buff.isPinned()) {
 			numAvailable++;
 		}

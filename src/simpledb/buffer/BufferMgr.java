@@ -32,7 +32,7 @@ public class BufferMgr {
 	 *            the number of buffer slots to allocate
 	 */
 	public BufferMgr(int numbuffers) {
-		bufferMgr = new LRUBufferMgr(numbuffers);
+		bufferMgr = new ClockBufferMgr(numbuffers);
 	}
 
 	/**
