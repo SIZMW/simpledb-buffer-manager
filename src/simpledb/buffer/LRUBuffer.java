@@ -14,7 +14,6 @@ public class LRUBuffer extends Buffer {
 	 * Creates a LRUBuffer instance. Sets the last recently used time.
 	 */
 	public LRUBuffer() {
-		super();
 		leastRecentlyUsedTimeMillis = System.currentTimeMillis();
 	}
 
@@ -23,14 +22,14 @@ public class LRUBuffer extends Buffer {
 	 *
 	 * @return a long
 	 */
-	public long getLastRecentlyUsedTimeMillis() {
+	public long getLeastRecentlyUsedTimeMillis() {
 		return leastRecentlyUsedTimeMillis;
 	}
 
 	/**
 	 * Sets the least recently used time in milliseconds.
 	 */
-	public void setLastRecentlyUsedTimeMillis() {
+	public void setLeastRecentlyUsedTimeMillis() {
 		leastRecentlyUsedTimeMillis = System.currentTimeMillis();
 	}
 }

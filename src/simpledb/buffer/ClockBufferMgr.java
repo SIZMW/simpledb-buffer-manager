@@ -37,7 +37,7 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 	 */
 	@Override
 	public int available() {
-		return bufferCountAvailable;
+		return numAvailable;
 	}
 
 	/*
@@ -48,7 +48,7 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 	@Override
 	protected Buffer chooseUnpinnedBuffer() {
 		// If there are buffer spaces left in memory
-		if (bufferCountAvailable < maxBufferCount) {
+		if (numAvailable < maxBufferCount) {
 			return new Buffer();
 		} else {
 			// Find a buffer to remove from memory
@@ -105,7 +105,7 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 		}
 
 		if (!buff.isPinned()) {
-			bufferCountAvailable--;
+			numAvailable--;
 		}
 		buff.pin();
 		((ClockBuffer) buff).setRefBit(true);
@@ -128,7 +128,7 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 		}
 
 		buff.assignToNew(filename, fmtr);
-		bufferCountAvailable--;
+		numAvailable--;
 		buff.pin();
 		((ClockBuffer) buff).setRefBit(true);
 		clockHeadPosition = buff.block().number();
@@ -147,7 +147,7 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 		((ClockBuffer) buff).setRefBit(true);
 		clockHeadPosition = buff.block().number();
 		if (!buff.isPinned()) {
-			bufferCountAvailable++;
+			numAvailable++;
 		}
 	}
 }

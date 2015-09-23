@@ -14,7 +14,7 @@ public abstract class AbstractBufferMgr {
 	protected int maxBufferCount;
 
 	// The current number of free buffers
-	protected int bufferCountAvailable = 0;
+	protected int numAvailable = 0;
 
 	/**
 	 * Creates a AbstractBufferMgr instance with the specified maximum number of
@@ -25,6 +25,7 @@ public abstract class AbstractBufferMgr {
 	 */
 	public AbstractBufferMgr(int numbuffs) {
 		maxBufferCount = numbuffs;
+		numAvailable = numbuffs;
 	}
 
 	/**

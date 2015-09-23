@@ -13,7 +13,7 @@ import simpledb.file.Block;
 public class LRUBufferMgr extends AbstractBufferMgr {
 
 	// The map of the memory buffers
-	protected HashMap<Integer, LRUBuffer> buffer;
+	protected HashMap<Block, LRUBuffer> buffer;
 
 	/**
 	 * Creates a LRUBufferMgr instance with the specified maximum number of
@@ -24,7 +24,7 @@ public class LRUBufferMgr extends AbstractBufferMgr {
 	 */
 	public LRUBufferMgr(int numbuffs) {
 		super(numbuffs);
-		buffer = new HashMap<Integer, LRUBuffer>();
+		buffer = new HashMap<Block, LRUBuffer>();
 	}
 
 	/*
@@ -34,24 +34,25 @@ public class LRUBufferMgr extends AbstractBufferMgr {
 	 */
 	@Override
 	public int available() {
-		return bufferCountAvailable;
+		return numAvailable;
 	}
 
-	/*
+	/**
+	 * Chooses an unpinned buffer to replace with a new page. If there is no
+	 * space in the memory buffer, the least recently used buffer is emptied and
+	 * returned.
+	 *
 	 * (non-Javadoc)
 	 *
 	 * @see simpledb.buffer.AbstractBufferMgr#chooseUnpinnedBuffer()
 	 */
 	@Override
 	protected Buffer chooseUnpinnedBuffer() {
-		// If there are buffer spaces left in memory
-		if (bufferCountAvailable < maxBufferCount) {
-			return new LRUBuffer();
-		} else {
-			// Find a buffer to remove from memory
-			findLeastRecentlyUsed();
+		if (numAvailable > 0) {
 			return new LRUBuffer();
 		}
+
+		return findLeastRecentlyUsed();
 	}
 
 	/*
@@ -62,14 +63,36 @@ public class LRUBufferMgr extends AbstractBufferMgr {
 	 */
 	@Override
 	protected Buffer findExistingBuffer(Block blk) {
-		return buffer.get(new Integer(blk.number()));
+		return buffer.get(blk);
 	}
 
 	/**
-	 * Finds the least recently used buffer and removes it from memory.
+	 * Finds the least recently used buffer and removes it from memory. If the
+	 * memory buffer is empty, returns a new buffer to write into. Otherwise,
+	 * returns the least recently used buffer.
 	 */
-	protected synchronized void findLeastRecentlyUsed() {
-		// TODO Search and remove LRU buffer code here
+	protected synchronized LRUBuffer findLeastRecentlyUsed() {
+		long time = -1;
+		Block blk = null;
+
+		if (buffer.keySet().size() <= 0) {
+			return new LRUBuffer();
+		}
+
+		for (Block block : buffer.keySet()) {
+			LRUBuffer buff = buffer.get(block);
+			if (time == -1 && !buff.isPinned()) {
+				time = buff.getLeastRecentlyUsedTimeMillis();
+			} else if (!buff.isPinned()) {
+				time = (time > buff.getLeastRecentlyUsedTimeMillis()) ? buff.getLeastRecentlyUsedTimeMillis() : time;
+				blk = block;
+			}
+		}
+
+		if (buffer.remove(blk) != null) {
+			return new LRUBuffer();
+		}
+		return null;
 	}
 
 	/*
@@ -79,7 +102,7 @@ public class LRUBufferMgr extends AbstractBufferMgr {
 	 */
 	@Override
 	protected synchronized void flushAll(int txnum) {
-		for (Integer block : buffer.keySet()) {
+		for (Block block : buffer.keySet()) {
 			if (buffer.get(block).isModifiedBy(txnum)) {
 				buffer.get(block).flush();
 			}
@@ -96,17 +119,20 @@ public class LRUBufferMgr extends AbstractBufferMgr {
 		Buffer buff = findExistingBuffer(blk);
 		if (buff == null) {
 			buff = chooseUnpinnedBuffer();
-			if (buff == null)
+
+			if (buff == null) {
 				return null;
+			}
 			buff.assignToBlock(blk);
+			buffer.put(blk, (LRUBuffer) buff);
 		}
 
 		if (!buff.isPinned()) {
-			bufferCountAvailable--;
+			numAvailable--;
 		}
 		buff.pin();
 
-		((LRUBuffer) buff).setLastRecentlyUsedTimeMillis();
+		((LRUBuffer) buff).setLeastRecentlyUsedTimeMillis();
 
 		return buff;
 	}
@@ -125,10 +151,11 @@ public class LRUBufferMgr extends AbstractBufferMgr {
 		}
 
 		buff.assignToNew(filename, fmtr);
-		bufferCountAvailable--;
+		buffer.put(buff.block(), (LRUBuffer) buff);
+		numAvailable--;
 		buff.pin();
 
-		((LRUBuffer) buff).setLastRecentlyUsedTimeMillis();
+		((LRUBuffer) buff).setLeastRecentlyUsedTimeMillis();
 
 		return buff;
 	}
@@ -142,9 +169,9 @@ public class LRUBufferMgr extends AbstractBufferMgr {
 	protected synchronized void unpin(Buffer buff) {
 		buff.unpin();
 		if (!buff.isPinned()) {
-			bufferCountAvailable++;
+			numAvailable++;
 		}
 
-		((LRUBuffer) buff).setLastRecentlyUsedTimeMillis();
+		((LRUBuffer) buff).setLeastRecentlyUsedTimeMillis();
 	}
 }
