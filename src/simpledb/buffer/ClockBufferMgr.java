@@ -1,5 +1,8 @@
 package simpledb.buffer;
 
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+
 import simpledb.file.Block;
 
 /**
@@ -11,10 +14,10 @@ import simpledb.file.Block;
 public class ClockBufferMgr extends AbstractBufferMgr {
 
 	// The map of the memory buffers
-	protected ClockBuffer[] bufferpool;
+	protected LinkedHashMap<Block, ClockBuffer> buffer;
 
 	// Location of the clock head
-	protected int clockHeadPosition = 0;
+	protected Block clockHeadPosition = null;
 
 	/**
 	 * Creates a LRUBuffer instance with the specified maximum number of
@@ -25,11 +28,7 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 	 */
 	public ClockBufferMgr(int numbuffs) {
 		super(numbuffs);
-		bufferpool = new ClockBuffer[numbuffs];
-		for (int i = 0; i < numbuffs; i++) {
-			bufferpool[i] = new ClockBuffer();
-		}
-		clockHeadPosition = 0;
+		buffer = new LinkedHashMap<Block, ClockBuffer>();
 	}
 
 	/*
@@ -49,6 +48,9 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 	 */
 	@Override
 	protected Buffer chooseUnpinnedBuffer() {
+		if (numAvailable > 0) {
+			return new ClockBuffer();
+		}
 		return findBufferClockPolicy();
 	}
 
@@ -56,17 +58,29 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 	 * Finds a buffer to remove by clock policy and removes it from memory.
 	 */
 	protected synchronized Buffer findBufferClockPolicy() {
+		if (buffer.keySet().size() <= 0) {
+			return new ClockBuffer();
+		}
+
+		Iterator<Block> iterator = buffer.keySet().iterator();
+		outerloop: while (iterator.hasNext()) {
+			if (iterator.next().equals(clockHeadPosition)) {
+				break outerloop;
+			}
+		}
+
 		for (int j = 0; j < 2; j++) {
-			for (int i = clockHeadPosition; i < bufferpool.length; i++) {
-				if (bufferpool[i].isPinned()) {
-				} else if (bufferpool[i].getRefBit()) {
-					bufferpool[i].setRefBit(false);
+			while (iterator.hasNext()) {
+				Block blk = iterator.next();
+				if (buffer.get(blk).isPinned()) {
+				} else if (buffer.get(blk).getRefBit()) {
+					buffer.get(blk).setRefBit(false);
 				} else {
-					clockHeadPosition = i;
-					return bufferpool[i];
+					clockHeadPosition = blk;
+					return buffer.get(blk);
 				}
 			}
-			clockHeadPosition = 0;
+			iterator = buffer.keySet().iterator();
 		}
 
 		return null;
@@ -80,13 +94,7 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 	 */
 	@Override
 	protected Buffer findExistingBuffer(Block blk) {
-		for (Buffer buff : bufferpool) {
-			Block b = buff.block();
-			if (b != null && b.equals(blk)) {
-				return buff;
-			}
-		}
-		return null;
+		return buffer.get(blk);
 	}
 
 	/*
@@ -96,9 +104,9 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 	 */
 	@Override
 	protected synchronized void flushAll(int txnum) {
-		for (Buffer buff : bufferpool) {
-			if (buff.isModifiedBy(txnum)) {
-				buff.flush();
+		for (Block block : buffer.keySet()) {
+			if (buffer.get(block).isModifiedBy(txnum)) {
+				buffer.get(block).flush();
 			}
 		}
 	}
@@ -117,6 +125,11 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 				return null;
 			}
 			buff.assignToBlock(blk);
+			buffer.put(blk, (ClockBuffer) buff);
+
+			if (clockHeadPosition == null) {
+				clockHeadPosition = blk;
+			}
 		}
 		if (!buff.isPinned()) {
 			numAvailable--;
@@ -138,6 +151,13 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 			return null;
 		}
 		buff.assignToNew(filename, fmtr);
+
+		buffer.put(buff.block(), (ClockBuffer) buff);
+
+		if (clockHeadPosition == null) {
+			clockHeadPosition = buff.block();
+		}
+
 		numAvailable--;
 		buff.pin();
 		return buff;
