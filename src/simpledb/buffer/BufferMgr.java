@@ -31,8 +31,20 @@ public class BufferMgr {
 	 * @param numbuffers
 	 *            the number of buffer slots to allocate
 	 */
-	public BufferMgr(int numbuffers) {
-		bufferMgr = new ClockBufferMgr(numbuffers);
+	public BufferMgr(int numbuffers, int bufferSelect) {
+		switch (bufferSelect) {
+			case 1:
+				bufferMgr = new ClockBufferMgr(numbuffers);
+				System.out.println("Using Clock replacement policy");
+				break;
+			case 2:
+				bufferMgr = new LRUBufferMgr(numbuffers);
+				System.out.println("Using LRU replacement policy");
+				break;
+			default:
+				bufferMgr = new BasicBufferMgr(numbuffers);
+				break;
+		}
 	}
 
 	/**

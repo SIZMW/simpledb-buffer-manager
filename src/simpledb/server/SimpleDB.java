@@ -36,8 +36,8 @@ public class SimpleDB {
     * This method is called during system startup.
     * @param dirname the name of the database directory
     */
-   public static void init(String dirname) {
-      initFileLogAndBufferMgr(dirname);
+   public static void init(String dirname, int bufferSelect) {
+      initFileLogAndBufferMgr(dirname, bufferSelect);
       Transaction tx = new Transaction();
       boolean isnew = fm.isNew();
       if (isnew)
@@ -75,9 +75,9 @@ public class SimpleDB {
     * Initializes the file, log, and buffer managers.
     * @param dirname the name of the database directory
     */
-   public static void initFileLogAndBufferMgr(String dirname) {
+   public static void initFileLogAndBufferMgr(String dirname, int bufferSelect) {
       initFileAndLogMgr(dirname);
-      bm = new BufferMgr(BUFFER_SIZE);
+      bm = new BufferMgr(BUFFER_SIZE, bufferSelect);
    }
    
    /**
