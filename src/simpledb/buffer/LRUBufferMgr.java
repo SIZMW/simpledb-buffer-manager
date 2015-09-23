@@ -81,16 +81,19 @@ public class LRUBufferMgr extends AbstractBufferMgr {
 
 		for (Block block : buffer.keySet()) {
 			LRUBuffer buff = buffer.get(block);
-			if (time == -1 && !buff.isPinned()) {
-				time = buff.getLeastRecentlyUsedTimeMillis();
-			} else if (!buff.isPinned()) {
-				time = (time > buff.getLeastRecentlyUsedTimeMillis()) ? buff.getLeastRecentlyUsedTimeMillis() : time;
-				blk = block;
+			if (!buff.isPinned()) {
+				if (time == -1) {
+					time = buff.getLeastRecentlyUsedTimeMillis();
+					blk = block;
+				} else if (time > buff.getLeastRecentlyUsedTimeMillis()) {
+					time = buff.getLeastRecentlyUsedTimeMillis();
+					blk = block;
+				}
 			}
 		}
 
-		if (buffer.remove(blk) != null) {
-			return new LRUBuffer();
+		if (blk != null) {
+			return buffer.get(blk);
 		}
 		return null;
 	}
