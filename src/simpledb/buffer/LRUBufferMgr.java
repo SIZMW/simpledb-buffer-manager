@@ -93,7 +93,7 @@ public class LRUBufferMgr extends AbstractBufferMgr {
 		}
 
 		if (blk != null) {
-			return buffer.get(blk);
+			return buffer.remove(blk);
 		}
 		return null;
 	}

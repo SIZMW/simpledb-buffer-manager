@@ -1,7 +1,11 @@
 package simpledb.buffer;
 
+import java.util.logging.Level;
+
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+
+import simpledb.server.SimpleDB;
 
 import simpledb.file.Block;
 
@@ -48,10 +52,16 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 	 */
 	@Override
 	protected Buffer chooseUnpinnedBuffer() {
+		SimpleDB.getLogger().log(Level.INFO, String.format("Number available: %d", numAvailable));
 		if (numAvailable > 0) {
 			return new ClockBuffer();
 		}
-		return findBufferClockPolicy();
+		long start_time = System.currentTimeMillis();
+		System.out.println("test");
+		SimpleDB.getLogger().log(Level.INFO, String.format("Start time: %l", start_time));
+		Buffer ret = findBufferClockPolicy();
+		SimpleDB.getLogger().log(Level.INFO, String.format("Time elapsed: %l", System.currentTimeMillis()-start_time));
+		return ret;
 	}
 
 	/**
@@ -77,7 +87,7 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 					buffer.get(blk).setRefBit(false);
 				} else {
 					clockHeadPosition = blk;
-					return buffer.get(blk);
+					return buffer.remove(blk);
 				}
 			}
 			iterator = buffer.keySet().iterator();

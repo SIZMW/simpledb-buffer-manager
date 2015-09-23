@@ -1,5 +1,9 @@
 package simpledb.buffer;
 
+import java.util.logging.Level;
+
+import simpledb.server.SimpleDB;
+
 import simpledb.file.Block;
 import simpledb.file.FileMgr;
 
@@ -35,14 +39,15 @@ public class BufferMgr {
 		switch (bufferSelect) {
 			case 1:
 				bufferMgr = new ClockBufferMgr(numbuffers);
-				System.out.println("Using Clock replacement policy");
+				SimpleDB.getLogger().log(Level.INFO, "Using Clock replacement policy");
 				break;
 			case 2:
 				bufferMgr = new LRUBufferMgr(numbuffers);
-				System.out.println("Using LRU replacement policy");
+				SimpleDB.getLogger().log(Level.INFO, "Using Clock replacement policy");
 				break;
 			default:
 				bufferMgr = new BasicBufferMgr(numbuffers);
+				SimpleDB.getLogger().log(Level.INFO, "Using Basic replacement policy");
 				break;
 		}
 	}

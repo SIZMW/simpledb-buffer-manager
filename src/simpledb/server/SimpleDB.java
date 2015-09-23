@@ -1,5 +1,10 @@
 package simpledb.server;
 
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+
 import simpledb.file.FileMgr;
 import simpledb.buffer.*;
 import simpledb.tx.Transaction;
@@ -23,13 +28,17 @@ import simpledb.index.planner.IndexUpdatePlanner;
  * @author Edward Sciore
  */
 public class SimpleDB {
-   public static int BUFFER_SIZE = 8;
+   public static int BUFFER_SIZE = 2;
    public static String LOG_FILE = "simpledb.log";
+
+   public static String CS4431_LOGS = "cs4431.log";
    
    private static FileMgr     fm;
    private static BufferMgr   bm;
    private static LogMgr      logm;
    private static MetadataMgr mdm;
+
+   private static Logger logger;
    
    /**
     * Initializes the system.
@@ -38,12 +47,14 @@ public class SimpleDB {
     */
    public static void init(String dirname, int bufferSelect) {
       initFileLogAndBufferMgr(dirname, bufferSelect);
+
       Transaction tx = new Transaction();
       boolean isnew = fm.isNew();
-      if (isnew)
-         System.out.println("creating new database");
+      if (isnew) {
+         logger.log(Level.INFO, "Creating new database");
+       }
       else {
-         System.out.println("recovering existing database");
+         logger.log(Level.INFO, "Recovering existing database");
          tx.recover();
       }
       initMetadataMgr(isnew, tx);
@@ -69,6 +80,18 @@ public class SimpleDB {
    public static void initFileAndLogMgr(String dirname) {
       initFileMgr(dirname);
       logm = new LogMgr(LOG_FILE);
+      try {
+        FileHandler logFileHandler = new FileHandler(CS4431_LOGS);
+        logFileHandler.setLevel(Level.ALL);
+
+        SimpleFormatter simpleFormatter = new SimpleFormatter();
+        logFileHandler.setFormatter(simpleFormatter);
+
+        logger = Logger.getGlobal();
+        logger.addHandler(logFileHandler);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
    }
    
    /**
@@ -94,6 +117,10 @@ public class SimpleDB {
    public static BufferMgr   bufferMgr() { return bm; }
    public static LogMgr      logMgr()    { return logm; }
    public static MetadataMgr mdMgr()     { return mdm; }
+
+    public static Logger getLogger() {
+        return logger;
+    }
    
    /**
     * Creates a planner for SQL commands.
