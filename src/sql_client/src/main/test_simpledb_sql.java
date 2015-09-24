@@ -92,10 +92,10 @@ public class test_simpledb_sql {
 			while (line != null) {
 				line = line.trim();
 				// process one line of input
-				System.out.println("\n" + line);
+				System.out.println("\n" + "\"" + line + "\"");
 				if (line.startsWith("select")) {
 					doQuery(line);
-				} else {
+				} else if (line.startsWith("insert") || line.startsWith("create")) {
 					doUpdate(line);
 				}
 				line = br.readLine();
