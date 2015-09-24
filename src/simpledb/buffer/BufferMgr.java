@@ -20,9 +20,19 @@ import simpledb.server.SimpleDB;
  */
 public class BufferMgr {
 	private static final long MAX_TIME = 10000; // 10 seconds
+
+	// CS 4432 Project 1
+	// We modified this from BasicBufferMgr to our Abstract so we can easily
+	// replace which buffer manager to use.
 	private AbstractBufferMgr bufferMgr;
 
 	/**
+	 * CS 4432 Project 1
+	 *
+	 * We modified this constructor to take in a new integer value specifying
+	 * which buffer manager and replacement policy to use. 1 is for Clock, and 2
+	 * is for LRU. Any other value is for basic.
+	 *
 	 * Creates a new buffer manager having the specified number of buffers. This
 	 * constructor depends on both the {@link FileMgr} and
 	 * {@link simpledb.log.LogMgr LogMgr} objects that it gets from the class

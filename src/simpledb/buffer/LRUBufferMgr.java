@@ -5,10 +5,15 @@ import java.util.HashMap;
 import simpledb.file.Block;
 
 /**
+ * CS 4432 Project 1
+ *
+ * We created this class to handle the LRU replacement policy for a buffer
+ * manager.
+ *
  * This class handles pinning and unpinning buffers in memory using the least
  * recently used policy for buffer replacement.
  *
- * @author Aditya Nivarthi
+ * @author Lambert Wang
  */
 public class LRUBufferMgr extends AbstractBufferMgr {
 

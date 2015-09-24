@@ -3,6 +3,8 @@ package simpledb.buffer;
 import simpledb.file.Block;
 
 /**
+ * CS 4432 Project 1
+ *
  * This abstract class is used to define the methods needed for a buffer
  * manager.
  *

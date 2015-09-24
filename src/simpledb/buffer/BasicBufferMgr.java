@@ -4,6 +4,11 @@ import simpledb.file.Block;
 import simpledb.file.FileMgr;
 
 /**
+ * CS 4432 Project 1
+ *
+ * We made this class extend our AbstractBufferMgr so we could modify the usage
+ * in the BufferMgr class.
+ *
  * Manages the pinning and unpinning of buffers to blocks.
  *
  * @author Edward Sciore

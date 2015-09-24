@@ -1,10 +1,15 @@
 package simpledb.buffer;
 
 /**
+ * CS 4432 Project 1
+ *
+ * We created this class to extend the Buffer clas and have the least recently
+ * used time.
+ *
  * This class represents an individual buffer used in least recently used
  * replacement policy.
  *
- * @author Aditya Nivarthi
+ * @author Lambert Wang
  */
 public class LRUBuffer extends Buffer {
 

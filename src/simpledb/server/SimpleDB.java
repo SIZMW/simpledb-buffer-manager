@@ -29,15 +29,17 @@ import simpledb.tx.Transaction;
  */
 public class SimpleDB {
 	public static int BUFFER_SIZE = 8;
-	public static String LOG_FILE = "simpledb.log";
 
-	public static String CS4431_LOGS = "cs4431.log";
+	public static String LOG_FILE = "simpledb.log";
+	public static String CS4431_LOGS = "cs4432.log";
 
 	private static FileMgr fm;
 	private static BufferMgr bm;
 	private static LogMgr logm;
 	private static MetadataMgr mdm;
 
+	// CS 4432 Project 1
+	// Logger for log file output
 	private static Logger logger;
 
 	public static BufferMgr bufferMgr() {
@@ -52,6 +54,13 @@ public class SimpleDB {
 		return fm;
 	}
 
+	/**
+	 * CS 4432 Project 1
+	 *
+	 * Returns the global SimpleDB file logger.
+	 *
+	 * @return a Logger
+	 */
 	public static Logger getLogger() {
 		return logger;
 	}
@@ -86,6 +95,9 @@ public class SimpleDB {
 	public static void initFileAndLogMgr(String dirname) {
 		initFileMgr(dirname);
 		logm = new LogMgr(LOG_FILE);
+
+		// CS 4432 Project 1
+		// Added our own log file logging handlers
 		try {
 			FileHandler logFileHandler = new FileHandler(CS4431_LOGS);
 			logFileHandler.setLevel(Level.ALL);

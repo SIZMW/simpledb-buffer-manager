@@ -10,7 +10,7 @@ import simpledb.server.SimpleDB;
  * the block has been pinned, whether the contents of the page have been
  * modified, and if so, the id of the modifying transaction and the LSN of the
  * corresponding log record.
- * 
+ *
  * @author Edward Sciore
  */
 public class Buffer {
@@ -38,7 +38,7 @@ public class Buffer {
 	 * Reads the contents of the specified block into the buffer's page. If the
 	 * buffer was dirty, then the contents of the previous page are first
 	 * written to disk.
-	 * 
+	 *
 	 * @param b
 	 *            a reference to the data block
 	 */
@@ -53,7 +53,7 @@ public class Buffer {
 	 * Initializes the buffer's page according to the specified formatter, and
 	 * appends the page to the specified file. If the buffer was dirty, then the
 	 * contents of the previous page are first written to disk.
-	 * 
+	 *
 	 * @param filename
 	 *            the name of the file
 	 * @param fmtr
@@ -68,7 +68,7 @@ public class Buffer {
 
 	/**
 	 * Returns a reference to the disk block that the buffer is pinned to.
-	 * 
+	 *
 	 * @return a reference to a disk block
 	 */
 	public Block block() {
@@ -92,7 +92,7 @@ public class Buffer {
 	 * Returns the integer value at the specified offset of the buffer's page.
 	 * If an integer was not stored at that location, the behavior of the method
 	 * is unpredictable.
-	 * 
+	 *
 	 * @param offset
 	 *            the byte offset of the page
 	 * @return the integer value at that offset
@@ -105,7 +105,7 @@ public class Buffer {
 	 * Returns the string value at the specified offset of the buffer's page. If
 	 * a string was not stored at that location, the behavior of the method is
 	 * unpredictable.
-	 * 
+	 *
 	 * @param offset
 	 *            the byte offset of the page
 	 * @return the string value at that offset
@@ -117,7 +117,7 @@ public class Buffer {
 	/**
 	 * Returns true if the buffer is dirty due to a modification by the
 	 * specified transaction.
-	 * 
+	 *
 	 * @param txnum
 	 *            the id of the transaction
 	 * @return true if the transaction modified the buffer
@@ -129,7 +129,7 @@ public class Buffer {
 	/**
 	 * Returns true if the buffer is currently pinned (that is, if it has a
 	 * nonzero pin count).
-	 * 
+	 *
 	 * @return true if the buffer is pinned
 	 */
 	boolean isPinned() {
@@ -149,7 +149,7 @@ public class Buffer {
 	 * log record. The buffer saves the id of the transaction and the LSN of the
 	 * log record. A negative lsn value indicates that a log record was not
 	 * necessary.
-	 * 
+	 *
 	 * @param offset
 	 *            the byte offset within the page
 	 * @param val
@@ -172,7 +172,7 @@ public class Buffer {
 	 * record. A negative lsn value indicates that a log record was not
 	 * necessary. The buffer saves the id of the transaction and the LSN of the
 	 * log record.
-	 * 
+	 *
 	 * @param offset
 	 *            the byte offset within the page
 	 * @param val
@@ -189,6 +189,16 @@ public class Buffer {
 		contents.setString(offset, val);
 	}
 
+	/**
+	 * CS 4432 Project 1
+	 *
+	 * We modified this method to return the block number and pin status of this
+	 * buffer.
+	 *
+	 * (non-Javadoc)
+	 *
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return "Number: " + blk.number() + ", Pin: " + isPinned();

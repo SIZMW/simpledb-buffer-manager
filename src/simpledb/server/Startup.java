@@ -9,8 +9,18 @@ import simpledb.remote.RemoteDriverImpl;
 public class Startup {
 	public static void main(String args[]) throws Exception {
 
-		/*
-		 * 0 = basic 1 = clock 2 = lru
+		/**
+		 * CS 4432 Project 1
+		 *
+		 * Command line arguments:
+		 *
+		 * -clock : triggers the clock policy for replacement
+		 *
+		 * -lru : triggers the LRU policy for replacement
+		 *
+		 * No arguments : triggers the basic buffer manager
+		 *
+		 * @author Lambert Wang
 		 */
 		int bufferManager = 0;
 		for (String s : args) {

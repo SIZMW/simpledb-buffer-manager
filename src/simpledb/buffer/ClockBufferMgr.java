@@ -8,6 +8,10 @@ import simpledb.file.Block;
 import simpledb.server.SimpleDB;
 
 /**
+ * CS 4432 Project 1
+ *
+ * We added this class to handle clock replacement policy for a buffer manager.
+ *
  * This class handles pinning and unpinning buffers in memory using the clock
  * policy for buffer replacement.
  *
@@ -22,7 +26,7 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 	protected Block clockHeadPosition = null;
 
 	/**
-	 * Creates a LRUBuffer instance with the specified maximum number of
+	 * Creates a ClockBufferMgr instance with the specified maximum number of
 	 * buffers.
 	 *
 	 * @param numbuffs
