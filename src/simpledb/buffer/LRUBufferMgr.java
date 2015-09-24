@@ -1,8 +1,10 @@
 package simpledb.buffer;
 
 import java.util.HashMap;
+import java.util.logging.Level;
 
 import simpledb.file.Block;
+import simpledb.server.SimpleDB;
 
 /**
  * CS 4432 Project 1
@@ -53,11 +55,21 @@ public class LRUBufferMgr extends AbstractBufferMgr {
 	 */
 	@Override
 	protected Buffer chooseUnpinnedBuffer() {
+		printBufferContents();
 		if (numAvailable > 0) {
 			return new LRUBuffer();
 		}
 
-		return findLeastRecentlyUsed();
+		long startTime = System.currentTimeMillis();
+		SimpleDB.getLogger().log(Level.INFO, "Start time: " + startTime);
+
+		Buffer ret = findLeastRecentlyUsed();
+
+		long endTime = System.currentTimeMillis();
+		SimpleDB.getLogger().log(Level.INFO, "End time: " + endTime);
+		SimpleDB.getLogger().log(Level.INFO, "Time elapsed: " + (endTime - startTime) + " ms");
+
+		return ret;
 	}
 
 	/*
@@ -68,7 +80,12 @@ public class LRUBufferMgr extends AbstractBufferMgr {
 	 */
 	@Override
 	protected Buffer findExistingBuffer(Block blk) {
-		return buffer.get(blk);
+		LRUBuffer buff = buffer.get(blk);
+		if (buff != null) {
+			buff.setLeastRecentlyUsedTimeMillis();
+		}
+
+		return buff;
 	}
 
 	/**
@@ -80,10 +97,13 @@ public class LRUBufferMgr extends AbstractBufferMgr {
 		long time = -1;
 		Block blk = null;
 
+		// Check if buffer is empty
 		if (buffer.keySet().size() <= 0) {
 			return new LRUBuffer();
 		}
 
+		// Compare each least recently used time with the smallest value to find
+		// the time farthest in the part.
 		for (Block block : buffer.keySet()) {
 			LRUBuffer buff = buffer.get(block);
 			if (!buff.isPinned()) {
@@ -98,6 +118,7 @@ public class LRUBufferMgr extends AbstractBufferMgr {
 		}
 
 		if (blk != null) {
+			SimpleDB.getLogger().log(Level.INFO, "Removed block: " + blk + " from buffer");
 			return buffer.remove(blk);
 		}
 		return null;
@@ -125,10 +146,12 @@ public class LRUBufferMgr extends AbstractBufferMgr {
 	@Override
 	protected synchronized Buffer pin(Block blk) {
 		Buffer buff = findExistingBuffer(blk);
+		SimpleDB.getLogger().log(Level.INFO, "Searched for existing block: " + blk + " and block was: " + buff);
+
 		if (buff == null) {
 			buff = chooseUnpinnedBuffer();
-
 			if (buff == null) {
+				SimpleDB.getLogger().log(Level.SEVERE, "Unpinned buffer was null");
 				return null;
 			}
 			buff.assignToBlock(blk);
@@ -137,7 +160,10 @@ public class LRUBufferMgr extends AbstractBufferMgr {
 
 		if (!buff.isPinned()) {
 			numAvailable--;
+			numAvailable = (numAvailable < 0) ? 0 : numAvailable;
 		}
+
+		SimpleDB.getLogger().log(Level.INFO, "Number available: " + numAvailable);
 		buff.pin();
 
 		((LRUBuffer) buff).setLeastRecentlyUsedTimeMillis();
@@ -155,17 +181,34 @@ public class LRUBufferMgr extends AbstractBufferMgr {
 	protected synchronized Buffer pinNew(String filename, PageFormatter fmtr) {
 		Buffer buff = chooseUnpinnedBuffer();
 		if (buff == null) {
+			SimpleDB.getLogger().log(Level.SEVERE, "Unpinned buffer was null");
 			return null;
 		}
 
 		buff.assignToNew(filename, fmtr);
 		buffer.put(buff.block(), (LRUBuffer) buff);
+
 		numAvailable--;
+		numAvailable = (numAvailable < 0) ? 0 : numAvailable;
+		SimpleDB.getLogger().log(Level.INFO, "Number available: " + numAvailable);
+
 		buff.pin();
 
 		((LRUBuffer) buff).setLeastRecentlyUsedTimeMillis();
 
 		return buff;
+	}
+
+	/**
+	 * Prints the buffer contents to the log output.
+	 */
+	protected void printBufferContents() {
+		String output = "";
+		for (Block blk : buffer.keySet()) {
+			output += blk + ": " + buffer.get(blk) + "\n";
+		}
+
+		SimpleDB.getLogger().log(Level.INFO, "\n\nBuffer Contents:\n" + output);
 	}
 
 	/*
@@ -176,10 +219,7 @@ public class LRUBufferMgr extends AbstractBufferMgr {
 	@Override
 	protected synchronized void unpin(Buffer buff) {
 		buff.unpin();
-		if (!buff.isPinned()) {
-			numAvailable++;
-		}
-
 		((LRUBuffer) buff).setLeastRecentlyUsedTimeMillis();
+		SimpleDB.getLogger().log(Level.INFO, "Buffer unpinned: " + buff);
 	}
 }

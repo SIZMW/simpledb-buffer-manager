@@ -37,4 +37,19 @@ public class LRUBuffer extends Buffer {
 	public void setLeastRecentlyUsedTimeMillis() {
 		leastRecentlyUsedTimeMillis = System.currentTimeMillis();
 	}
+
+	/**
+	 * CS 4432 Project 1
+	 *
+	 * We added this method to override the method in Buffer and give the LRU
+	 * time.
+	 *
+	 * (non-Javadoc)
+	 *
+	 * @see simpledb.buffer.Buffer#toString()
+	 */
+	@Override
+	public String toString() {
+		return super.toString() + ", LRU time: " + leastRecentlyUsedTimeMillis + " ms";
+	}
 }
