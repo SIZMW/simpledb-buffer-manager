@@ -1,13 +1,11 @@
 package simpledb.buffer;
 
-import java.util.logging.Level;
-
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-
-import simpledb.server.SimpleDB;
+import java.util.logging.Level;
 
 import simpledb.file.Block;
+import simpledb.server.SimpleDB;
 
 /**
  * This class handles pinning and unpinning buffers in memory using the clock
@@ -52,15 +50,20 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 	 */
 	@Override
 	protected Buffer chooseUnpinnedBuffer() {
-		SimpleDB.getLogger().log(Level.INFO, String.format("Number available: %d", numAvailable));
+		printBufferContents();
 		if (numAvailable > 0) {
 			return new ClockBuffer();
 		}
-		long start_time = System.currentTimeMillis();
-		System.out.println("test");
-		SimpleDB.getLogger().log(Level.INFO, String.format("Start time: %l", start_time));
+
+		long startTime = System.currentTimeMillis();
+		SimpleDB.getLogger().log(Level.INFO, "Start time: " + startTime);
+
 		Buffer ret = findBufferClockPolicy();
-		SimpleDB.getLogger().log(Level.INFO, String.format("Time elapsed: %l", System.currentTimeMillis()-start_time));
+
+		long endTime = System.currentTimeMillis();
+		SimpleDB.getLogger().log(Level.INFO, "End time: " + endTime);
+		SimpleDB.getLogger().log(Level.INFO, "Time elapsed: " + (endTime - startTime) + " ms");
+
 		return ret;
 	}
 
@@ -68,10 +71,12 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 	 * Finds a buffer to remove by clock policy and removes it from memory.
 	 */
 	protected synchronized Buffer findBufferClockPolicy() {
+		// Check if buffer is empty
 		if (buffer.keySet().size() <= 0) {
 			return new ClockBuffer();
 		}
 
+		// Find the clock head position block in the list of buffer slots
 		Iterator<Block> iterator = buffer.keySet().iterator();
 		outerloop: while (iterator.hasNext()) {
 			if (iterator.next().equals(clockHeadPosition)) {
@@ -79,14 +84,22 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 			}
 		}
 
+		// Run at least the partial pass from clockHeadPosition to the end of
+		// the buffer list, and then repeat from the start of the buffer list.
 		for (int j = 0; j < 2; j++) {
 			while (iterator.hasNext()) {
 				Block blk = iterator.next();
+
+				// Skip pinned blocks
 				if (buffer.get(blk).isPinned()) {
 				} else if (buffer.get(blk).getRefBit()) {
+					// Set reference bits to false (0) if not pinned
 					buffer.get(blk).setRefBit(false);
+					SimpleDB.getLogger().log(Level.INFO, "Set reference bit to 'false' on block: " + blk);
 				} else {
+					// Found a block to replace
 					clockHeadPosition = blk;
+					SimpleDB.getLogger().log(Level.INFO, "Removed block: " + blk + " from buffer");
 					return buffer.remove(blk);
 				}
 			}
@@ -104,7 +117,12 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 	 */
 	@Override
 	protected Buffer findExistingBuffer(Block blk) {
-		return buffer.get(blk);
+		ClockBuffer buff = buffer.get(blk);
+		if (buff != null) {
+			buff.setRefBit(true);
+		}
+
+		return buff;
 	}
 
 	/*
@@ -129,9 +147,12 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 	@Override
 	protected synchronized Buffer pin(Block blk) {
 		Buffer buff = findExistingBuffer(blk);
+		SimpleDB.getLogger().log(Level.INFO, "Searched for existing block: " + blk + " and block was: " + buff);
+
 		if (buff == null) {
 			buff = chooseUnpinnedBuffer();
 			if (buff == null) {
+				SimpleDB.getLogger().log(Level.SEVERE, "Unpinned buffer was null");
 				return null;
 			}
 			buff.assignToBlock(blk);
@@ -143,7 +164,11 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 		}
 		if (!buff.isPinned()) {
 			numAvailable--;
+			numAvailable = (numAvailable < 0) ? 0 : numAvailable;
 		}
+
+		SimpleDB.getLogger().log(Level.INFO, "Number available: " + numAvailable);
+
 		buff.pin();
 		return buff;
 	}
@@ -158,10 +183,10 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 	protected synchronized Buffer pinNew(String filename, PageFormatter fmtr) {
 		Buffer buff = chooseUnpinnedBuffer();
 		if (buff == null) {
+			SimpleDB.getLogger().log(Level.SEVERE, "Unpinned buffer was null");
 			return null;
 		}
 		buff.assignToNew(filename, fmtr);
-
 		buffer.put(buff.block(), (ClockBuffer) buff);
 
 		if (clockHeadPosition == null) {
@@ -169,8 +194,24 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 		}
 
 		numAvailable--;
+		numAvailable = (numAvailable < 0) ? 0 : numAvailable;
+
+		SimpleDB.getLogger().log(Level.INFO, "Number available: " + numAvailable);
+
 		buff.pin();
 		return buff;
+	}
+
+	/**
+	 * Prints the buffer contents to the log output.
+	 */
+	protected void printBufferContents() {
+		String output = "";
+		for (Block blk : buffer.keySet()) {
+			output += blk + ": " + buffer.get(blk) + "\n";
+		}
+
+		SimpleDB.getLogger().log(Level.INFO, "\n\nBuffer Contents:\n" + output);
 	}
 
 	/*
@@ -181,8 +222,6 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 	@Override
 	protected synchronized void unpin(Buffer buff) {
 		buff.unpin();
-		if (!buff.isPinned()) {
-			numAvailable++;
-		}
+		SimpleDB.getLogger().log(Level.INFO, "Buffer unpinned: " + buff);
 	}
 }

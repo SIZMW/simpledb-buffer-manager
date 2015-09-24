@@ -2,10 +2,9 @@ package simpledb.buffer;
 
 import java.util.logging.Level;
 
-import simpledb.server.SimpleDB;
-
 import simpledb.file.Block;
 import simpledb.file.FileMgr;
+import simpledb.server.SimpleDB;
 
 /**
  * The publicly-accessible buffer manager. A buffer manager wraps a basic buffer
@@ -37,18 +36,18 @@ public class BufferMgr {
 	 */
 	public BufferMgr(int numbuffers, int bufferSelect) {
 		switch (bufferSelect) {
-			case 1:
-				bufferMgr = new ClockBufferMgr(numbuffers);
-				SimpleDB.getLogger().log(Level.INFO, "Using Clock replacement policy");
-				break;
-			case 2:
-				bufferMgr = new LRUBufferMgr(numbuffers);
-				SimpleDB.getLogger().log(Level.INFO, "Using Clock replacement policy");
-				break;
-			default:
-				bufferMgr = new BasicBufferMgr(numbuffers);
-				SimpleDB.getLogger().log(Level.INFO, "Using Basic replacement policy");
-				break;
+		case 1:
+			bufferMgr = new ClockBufferMgr(numbuffers);
+			SimpleDB.getLogger().log(Level.INFO, "Using Clock replacement policy");
+			break;
+		case 2:
+			bufferMgr = new LRUBufferMgr(numbuffers);
+			SimpleDB.getLogger().log(Level.INFO, "Using LRU replacement policy");
+			break;
+		default:
+			bufferMgr = new BasicBufferMgr(numbuffers);
+			SimpleDB.getLogger().log(Level.INFO, "Using Basic replacement policy");
+			break;
 		}
 	}
 

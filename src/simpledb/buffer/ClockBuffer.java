@@ -27,11 +27,16 @@ public class ClockBuffer extends Buffer {
 
 	/**
 	 * Sets the reference bit state to the specified state.
-	 * 
+	 *
 	 * @param state
 	 *            The boolean state of the reference bit.
 	 */
 	public void setRefBit(boolean state) {
 		refBit = state;
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + ", Reference bit: " + refBit;
 	}
 }
