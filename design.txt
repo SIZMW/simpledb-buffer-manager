@@ -1,0 +1,40 @@
+Design Document
+
+Authors:
+* Aditya Nivarthi (anivarthi)
+* Lambert Wang (lwang5)
+
+LRU Buffer structure:
+* Our buffer structure uses a Hashmap, comprised of a key for the block, and the buffer for the value. This allows access to any buffer given the block in log(n) time.
+* We have a separate buffer called the LRUBuffer for this replacement policy. This buffer extends the provided Buffer class, and it adds on a last recently used time attribute to keep track of which page was least recently used. This is used in storing buffers in the HashMap, setting the new recently used time when pages are accessed, pinned or unpinned. It is also used when finding a buffer to replace to compare all the buffers and find the least recently used buffer by oldest time.
+
+Clock Buffer structure:
+* Our buffer structure uses a LinkedHashmap, comprised of a key for the block, and the buffer for the value. This allows access to any buffer given the block in log(n) time. It also allows us to access the block keys in a constant order to implement the clock head properly.
+* We have a separate buffer called the ClockBuffer for this replacement policy. This buffer extends the provided Buffer class, and it adds on a reference bit attribute to keep track of the "second chance" for each page. This is used in storing buffers in the HashMap, setting the reference bit when pages are accessed, pinned or unpinned. It is also used when finding a buffer to replace to compare and set the reference bits if the pages are not pinned in memory, and to get a page to replace in the buffer with a reference bit of 0. In our case, the 0 or 1 is represented by a boolean value.
+
+Efficient search for empty frame:
+* Both implementations keep track of the number of buffers and the number of empty buffers. This allows constant time to find an empty buffer if one exists. If replacement is needed, it requires more time.
+
+Efficient search of a given disk block:
+* Our buffer structures are Hashmaps, which means we can map a block in memory to the associated buffer with that block. This search is log(n) time.
+
+Efficient Replacement Policy:
+* We have implemented the least recently used and clock replacement policies. We have separate buffer managers associated with each policy, and their usage can be switched at will when the simpledb.server.Starup is run.
+
+Other Basic Functionalities:
+* Pinning
+  * Pinning is defined in the buffer object. It can be seen in the logging output. Pinned buffers are not evicted if memory buffer space is required for a page replacement.
+* Dirty
+  * Dirty pages are written back to disk if they are replaced in memory. 
+
+Reporting functions:
+* Buffer
+  * Block ID
+  * Pin status
+* Block
+  * Last recently used time (LRU)
+  * Reference bit (Clock)
+  * Block number
+* BufferMgr/BasicBufferMgr
+  * Buffer contents
+* Print outs for showing functionality correctly

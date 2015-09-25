@@ -1,0 +1,6 @@
+Bugs Document
+
+Authors:
+* Aditya Nivarthi (anivarthi)
+* Lambert Wang (lwang5)
+

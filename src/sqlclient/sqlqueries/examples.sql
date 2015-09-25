@@ -1,3 +1,5 @@
+/* Initial database setup */
+
 create table STUDENT(SId int, SName varchar(10), MajorId int, GradYear int)
 
 insert into STUDENT(SId, SName, MajorId, GradYear) values (1, 'joe', 10, 2004)
@@ -42,21 +44,21 @@ insert into ENROLL(EId, StudentId, SectionId, Grade) values (44, 4, 33, 'B' )
 insert into ENROLL(EId, StudentId, SectionId, Grade) values (54, 4, 53, 'A' )
 insert into ENROLL(EId, StudentId, SectionId, Grade) values (64, 6, 53, 'A' )
 
+/* 
+ * Selection and insertion statements
+ * 
+ * These statements are tested using the same setup as above, so modifications before and after are tested to see if the same output is produced.
+ */
+
 select Sid, Sname, MajorId, GradYear from student
 select DId, DName from dept
 select CId, Title, DeptId from course
 select SectId, CourseId, Prof, YearOffered from section
 select EId, StudentId, SectionId, Grade from enroll
-
 select Sid, Sname from student where sid = 3 and majorid = 10
 select Sid, Sname from student where majorid = 10
-
 select DId, DName from dept where Did = 10
-
 select Cid, title from course
-
 select Sid, Sname from student where gradyear = 2005 and sname = 'sue'
-
 insert into student(sid, sname, majorid, gradyear) values (1, 'test', 10, 2016)
-
 select Sid, Sname from student where gradyear = 2016 and majorid = 10

@@ -1,4 +1,4 @@
-package sql_client.src.main;
+package sqlclient.main;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -18,10 +18,25 @@ import java.sql.Types;
 
 import simpledb.remote.SimpleDriver;
 
-public class test_simpledb_sql {
+/**
+ * CS 4432 Project 1
+ *
+ * This class is used to parse our SQL file and execute queries and statements
+ * on the SimpleDB database. This is our SQL application to create and run
+ * queries on our database.
+ *
+ * @author Lambert Wang
+ */
+public class ExecuteSimpleDBSQL {
 	private static Connection conn = null;
 
-	private static void doQuery(String cmd) {
+	/**
+	 * Executes a query with the specified command.
+	 *
+	 * @param cmd
+	 *            The command to execute as a query.
+	 */
+	protected static void doQuery(String cmd) {
 		try {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(cmd);
@@ -29,7 +44,7 @@ public class test_simpledb_sql {
 			int numcols = md.getColumnCount();
 			int totalwidth = 0;
 
-			// print header
+			// Print header
 			for (int i = 1; i <= numcols; i++) {
 				int width = md.getColumnDisplaySize(i);
 				totalwidth += width;
@@ -37,20 +52,22 @@ public class test_simpledb_sql {
 				System.out.format(fmt, md.getColumnName(i));
 			}
 			System.out.println();
-			for (int i = 0; i < totalwidth; i++)
+			for (int i = 0; i < totalwidth; i++) {
 				System.out.print("-");
+			}
 			System.out.println();
 
-			// print records
+			// Print records
 			while (rs.next()) {
 				for (int i = 1; i <= numcols; i++) {
 					String fldname = md.getColumnName(i);
 					int fldtype = md.getColumnType(i);
 					String fmt = "%" + md.getColumnDisplaySize(i);
-					if (fldtype == Types.INTEGER)
+					if (fldtype == Types.INTEGER) {
 						System.out.format(fmt + "d", rs.getInt(fldname));
-					else
+					} else {
 						System.out.format(fmt + "s", rs.getString(fldname));
+					}
 				}
 				System.out.println();
 			}
@@ -61,7 +78,13 @@ public class test_simpledb_sql {
 		}
 	}
 
-	private static void doUpdate(String cmd) {
+	/**
+	 * Executes an update statement with the specified command.
+	 *
+	 * @param cmd
+	 *            The command to execute as an update.
+	 */
+	protected static void doUpdate(String cmd) {
 		try {
 			Statement stmt = conn.createStatement();
 			int howmany = stmt.executeUpdate(cmd);
@@ -72,18 +95,25 @@ public class test_simpledb_sql {
 		}
 	}
 
+	/**
+	 * Main method. Takes in one argument for the SQL file to parse.
+	 *
+	 * @param args
+	 *            Command line arguments.
+	 */
 	public static void main(String[] args) {
 		try {
 			if (args.length != 1) {
 				throw new Exception("Program requires file name as an argument.");
 			}
-			// parse file name from command line arguments
+
+			// Parse file name from command line arguments
 			String file_name = args[0];
 
 			Driver d = new SimpleDriver();
 			conn = d.connect("jdbc:simpledb://localhost", null);
 
-			// Read sql queries from a file
+			// Read SQL queries from a file
 			Reader rdr = new FileReader(file_name);
 			BufferedReader br = new BufferedReader(rdr);
 
@@ -91,7 +121,8 @@ public class test_simpledb_sql {
 
 			while (line != null) {
 				line = line.trim();
-				// process one line of input
+
+				// Process one line of input
 				System.out.println("\n" + "\"" + line + "\"");
 				if (line.startsWith("select")) {
 					doQuery(line);
@@ -105,8 +136,9 @@ public class test_simpledb_sql {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (conn != null)
+				if (conn != null) {
 					conn.close();
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

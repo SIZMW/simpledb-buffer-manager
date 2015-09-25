@@ -19,6 +19,7 @@ Source Files Created:
 * ClockBufferManager.java
 * LRUBuffer.java
 * ClockBuffer.java
+* ExecuteSimpleDBSQL.java
 
 Source Files Modified:
 * BasicBufferMgr.java
@@ -26,11 +27,14 @@ Source Files Modified:
 * SimpleDB.java
 * Startup.java
 
+SQL Queries Created:
+* test.sql
+
 Usage (Eclipse Project):
 * Extract the zip file to get the project folder.
 * Import this project folder into Eclipse.
 
-To start the server, run the class simpleDB.server.Startup class with a run configuration, giving these arguments:
+To start the server, run the class `simpleDB.server.Startup` class with a run configuration, giving these arguments:
 * To run clock replacement policy:
 ```
 cs4432db -clock
@@ -39,10 +43,10 @@ cs4432db -clock
 ```
 cs4432db -lru
 ```
-* To run the test queries file, run the class sql_client.src.main.test_simpledb_sql.java
+* To run the test queries file, run the class `sqlclient.main.ExecuteSimpleDBSQL.java`
   * Run this class with a run configuration, giving these arguments:
 ```
-"<FILE_PATH_TO_PROJECT>/src/sql_client/src/test/sql_queries/test.sql"
+"<FILE_PATH_TO_PROJECT>/src/sqlclient/sqlqueries/test.sql"
 ```
 where `<FILE_PATH_TO_PROJECT>` is the full path to where the zip file project was extracted.
 
