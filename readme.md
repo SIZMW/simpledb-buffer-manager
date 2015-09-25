@@ -26,16 +26,16 @@ Source Files Modified:
 * SimpleDB.java
 * Startup.java
 
-Compile:
+Usage:
 * Extract the zip file to get the project folder.
 * Import this project folder into Eclipse.
-* To start the server, run the class simpleDB.server.Startup.
-  * Run this class with a run configuration, giving these arguments:
-  * To run clock replacement policy:
+
+To start the server, run the class simpleDB.server.Startup class with a run configuration, giving these arguments:
+* To run clock replacement policy:
 ```
 cs4432db -clock
 ```
-  * To run LRU replacement policy:
+* To run LRU replacement policy:
 ```
 cs4432db -lru
 ```
@@ -44,4 +44,4 @@ cs4432db -lru
 ```
 "<FILE_PATH_TO_PROJECT>/src/sql_client/src/test/sql_queries/test.sql"
 ```
-where FILE_PATH_TO_PROJECT is the full path to where the zip file project was extracted.
+where `<FILE_PATH_TO_PROJECT>` is the full path to where the zip file project was extracted.
