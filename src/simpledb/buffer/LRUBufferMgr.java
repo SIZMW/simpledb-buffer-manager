@@ -56,17 +56,18 @@ public class LRUBufferMgr extends AbstractBufferMgr {
 	@Override
 	protected Buffer chooseUnpinnedBuffer() {
 		printBufferContents();
+		long startTime = System.nanoTime();
+		long endTime;
 		if (numAvailable > 0) {
+			endTime = System.nanoTime();
+			SimpleDB.getLogger().log(Level.INFO, "Time elapsed: " + (endTime - startTime) + " ns");
 			return new LRUBuffer();
 		}
 
-		long startTime = System.nanoTime();
-		SimpleDB.getLogger().log(Level.INFO, "Start time: " + startTime + " ns");
 
 		Buffer ret = findLeastRecentlyUsed();
 
-		long endTime = System.nanoTime();
-		SimpleDB.getLogger().log(Level.INFO, "End time: " + endTime + " ns");
+		endTime = System.nanoTime();
 		SimpleDB.getLogger().log(Level.INFO, "Time elapsed: " + (endTime - startTime) + " ns");
 
 		return ret;
@@ -80,10 +81,15 @@ public class LRUBufferMgr extends AbstractBufferMgr {
 	 */
 	@Override
 	protected Buffer findExistingBuffer(Block blk) {
+		long startTime = System.nanoTime();
+
 		LRUBuffer buff = buffer.get(blk);
 		if (buff != null) {
 			buff.setLeastRecentlyUsedTimeMillis();
 		}
+
+		long endTime = System.nanoTime();
+		SimpleDB.getLogger().log(Level.INFO, "Time elapsed: " + (endTime - startTime) + " ns");
 
 		return buff;
 	}

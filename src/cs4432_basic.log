@@ -1,0 +1,4 @@
+Sep 25, 2015 4:17:51 PM simpledb.buffer.BufferMgr <init>
+INFO: Using Basic replacement policy
+Sep 25, 2015 4:17:51 PM simpledb.server.SimpleDB init
+INFO: Creating new database

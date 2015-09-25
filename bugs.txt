@@ -4,3 +4,14 @@ Authors:
 * Aditya Nivarthi (anivarthi)
 * Lambert Wang (lwang5)
 
+Bugs:
+    Existing:
+        Running test.sh sometimes fails as it attepts to run the examples.sql parallel to the server startup.
+            This is because a connection cannot be established to the database before the database is started
+            This can be avoided very easily by waiting until after the database is started before running tests on it.  
+    Fixed:
+        ClockReplacement was not iterating properly
+            We changed the clock buffer to a LinkedHashMap
+        New buffers were not being allocated properly on pin()
+            We reordered the decement of numAvailable
+

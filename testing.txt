@@ -4,5 +4,248 @@ Authors:
 * Aditya Nivarthi (anivarthi)
 * Lambert Wang (lwang5)
 
-Running the code from command
+The total time required to run all the queries in examples.sql for each implementation of buffer manager.
+We ran examples.sql multiple times on fresh databases in order to get a small sample of times.
+These sample times were obtained with all logging disabled.
+We collected these numbers to ensure that the time performance of our buffer managers were not drastically different from the basic buffer manager.
 
+Basic buffer manager
+ 1072.468 ms
+ 919.506 ms
+ 815.796 ms
+ 1137.279 ms
+Average: 986.262 ms
+
+LRU buffer manager
+ 1020.478 ms
+ 990.645 ms
+ 859.667 ms
+ 1111.423 ms
+Average: 995.553 ms
+
+Clock buffer manager
+ 1051.857 ms
+ 1086.245 ms
+ 1097.325 ms
+ 1107.451 ms
+Average: 1085.72 ms
+
+Internal log information:
+We did not add logging informaton to basic buffer manager because we assumes it works.
+This was obtained from the logging we added to our buffer manager implementations.
+These logs show that our implementations of the replacement policies are functioning as correctly.
+
+We added logging statements at the start and end of the following functions:
+    chooseUnpinnedBuffer
+    findExistingBuffer
+    pin
+    pinNew
+    unpin
+    printBufferContents
+
+LRU Buffer Manager:
+
+Locating a block in the buffer:
+    Sep 25, 2015 3:24:34 PM simpledb.buffer.LRUBufferMgr findExistingBuffer
+    INFO: Time elapsed: 70287 ns
+    Sep 25, 2015 3:24:34 PM simpledb.buffer.LRUBufferMgr pin
+    INFO: Searched for existing block: [file tblcat.tbl, block 0] and block was: Number: 0, Pin: false, LRU time: 1443209074458 ms
+
+Finding an empty frame when the buffer is not full:
+    Sep 25, 2015 3:29:53 PM simpledb.buffer.LRUBufferMgr chooseUnpinnedBuffer
+    INFO: Time elapsed: 398 ns
+
+Replacing a frame in the buffer:
+    Sep 25, 2015 3:29:56 PM simpledb.buffer.LRUBufferMgr findLeastRecentlyUsed
+    INFO: Removed block: [file enroll.tbl, block 0] from buffer
+    Sep 25, 2015 3:29:56 PM simpledb.buffer.LRUBufferMgr chooseUnpinnedBuffer
+    INFO: Time elapsed: 184484 ns
+
+    Sep 25, 2015 3:29:56 PM simpledb.buffer.LRUBufferMgr findLeastRecentlyUsed
+    INFO: Removed block: [file student.tbl, block 0] from buffer
+    Sep 25, 2015 3:29:56 PM simpledb.buffer.LRUBufferMgr chooseUnpinnedBuffer
+    INFO: Time elapsed: 389255 ns
+
+    Sep 25, 2015 3:29:56 PM simpledb.buffer.LRUBufferMgr findLeastRecentlyUsed
+    INFO: Removed block: [file dept.tbl, block 0] from buffer
+    Sep 25, 2015 3:29:56 PM simpledb.buffer.LRUBufferMgr chooseUnpinnedBuffer
+    INFO: Time elapsed: 84804 ns
+
+    Sep 25, 2015 3:29:56 PM simpledb.buffer.LRUBufferMgr findLeastRecentlyUsed
+    INFO: Removed block: [file course.tbl, block 0] from buffer
+    Sep 25, 2015 3:29:56 PM simpledb.buffer.LRUBufferMgr chooseUnpinnedBuffer
+    INFO: Time elapsed: 89719 ns
+
+Showing buffers before and after a replacement:
+    Buffer Contents:
+    [file fldcat.tbl, block 4]: Number: 4, Pin: false, LRU time: 1443209396636 ms
+    [file fldcat.tbl, block 2]: Number: 2, Pin: false, LRU time: 1443209396635 ms
+    [file fldcat.tbl, block 3]: Number: 3, Pin: false, LRU time: 1443209396635 ms
+    [file fldcat.tbl, block 0]: Number: 0, Pin: false, LRU time: 1443209396634 ms
+    [file fldcat.tbl, block 1]: Number: 1, Pin: false, LRU time: 1443209396635 ms
+    [file tblcat.tbl, block 0]: Number: 0, Pin: false, LRU time: 1443209396634 ms
+    [file viewcat.tbl, block 0]: Number: 0, Pin: false, LRU time: 1443209396633 ms
+    [file dept.tbl, block 0]: Number: 0, Pin: false, LRU time: 1443209396615 ms
+
+    Sep 25, 2015 3:29:56 PM simpledb.buffer.LRUBufferMgr findLeastRecentlyUsed
+    INFO: Removed block: [file dept.tbl, block 0] from buffer
+    Sep 25, 2015 3:29:56 PM simpledb.buffer.LRUBufferMgr chooseUnpinnedBuffer
+    INFO: Time elapsed: 84804 ns
+
+    Buffer Contents:
+    [file fldcat.tbl, block 4]: Number: 4, Pin: false, LRU time: 1443209396687 ms
+    [file fldcat.tbl, block 2]: Number: 2, Pin: false, LRU time: 1443209396687 ms
+    [file fldcat.tbl, block 3]: Number: 3, Pin: false, LRU time: 1443209396687 ms
+    [file fldcat.tbl, block 0]: Number: 0, Pin: false, LRU time: 1443209396686 ms
+    [file fldcat.tbl, block 1]: Number: 1, Pin: false, LRU time: 1443209396686 ms
+    [file tblcat.tbl, block 0]: Number: 0, Pin: false, LRU time: 1443209396686 ms
+    [file viewcat.tbl, block 0]: Number: 0, Pin: false, LRU time: 1443209396685 ms
+    [file course.tbl, block 0]: Number: 0, Pin: false, LRU time: 1443209396653 ms
+
+    In this case, dept.tbl was replaced with course.tbl in block 0. dept.tbl, block 0 had the earliest LRU time of all blocks in the buffer so it was the one chosen to be replaced. 
+
+Clock Buffer Manager:
+
+Locating a block in the buffer:
+    Sep 25, 2015 3:24:37 PM simpledb.buffer.ClockBufferMgr findExistingBuffer
+    INFO: Time elapsed: 106361 ns
+    Sep 25, 2015 3:24:37 PM simpledb.buffer.ClockBufferMgr pin
+    INFO: Searched for existing block: [file tblcat.tbl, block 0] and block was: Number: 0, Pin: false, Reference bit: true
+    Sep 25, 2015 3:24:37 PM simpledb.buffer.ClockBufferMgr pin
+    INFO: Number available: 7
+
+Finding an empty frame when buffer is not full:
+    Sep 25, 2015 3:29:57 PM simpledb.buffer.ClockBufferMgr chooseUnpinnedBuffer
+    INFO: Time elapsed: 23857 ns
+
+Replacing a frame in the buffer:
+    Sep 25, 2015 3:30:00 PM simpledb.buffer.ClockBufferMgr findBufferClockPolicy
+    INFO: Removed block: [file viewcat.tbl, block 0] from buffer
+    Sep 25, 2015 3:30:00 PM simpledb.buffer.ClockBufferMgr chooseUnpinnedBuffer
+    INFO: Time elapsed: 270347 ns
+
+    Sep 25, 2015 3:30:00 PM simpledb.buffer.ClockBufferMgr findBufferClockPolicy
+    INFO: Removed block: [file student.tbl, block 0] from buffer
+    Sep 25, 2015 3:30:00 PM simpledb.buffer.ClockBufferMgr chooseUnpinnedBuffer
+    INFO: Time elapsed: 746240 ns
+
+    INFO: Set reference bit to 'false' on block: [file fldcat.tbl, block 1]
+    Sep 25, 2015 3:30:00 PM simpledb.buffer.ClockBufferMgr findBufferClockPolicy
+    INFO: Removed block: [file dept.tbl, block 0] from buffer
+    Sep 25, 2015 3:30:00 PM simpledb.buffer.ClockBufferMgr chooseUnpinnedBuffer
+    INFO: Time elapsed: 345158 ns
+
+    Sep 25, 2015 3:30:00 PM simpledb.buffer.ClockBufferMgr findBufferClockPolicy
+    INFO: Removed block: [file course.tbl, block 0] from buffer
+    Sep 25, 2015 3:30:00 PM simpledb.buffer.ClockBufferMgr chooseUnpinnedBuffer
+    INFO: Time elapsed: 829233 ns
+
+Showing buffers before and after a replacement:
+    Buffer Contents:
+    [file fldcat.tbl, block 2]: Number: 2, Pin: false, Reference bit: true
+    [file fldcat.tbl, block 3]: Number: 3, Pin: false, Reference bit: true
+    [file fldcat.tbl, block 0]: Number: 0, Pin: false, Reference bit: true
+    [file fldcat.tbl, block 1]: Number: 1, Pin: false, Reference bit: true
+    [file dept.tbl, block 0]: Number: 0, Pin: false, Reference bit: false
+    [file tblcat.tbl, block 0]: Number: 0, Pin: false, Reference bit: true
+    [file fldcat.tbl, block 4]: Number: 4, Pin: false, Reference bit: true
+    [file viewcat.tbl, block 0]: Number: 0, Pin: false, Reference bit: false
+    
+    Clock head location: [file dept.tbl, block 0]
+
+    INFO: Set reference bit to 'false' on block: [file fldcat.tbl, block 1]
+    Sep 25, 2015 3:30:00 PM simpledb.buffer.ClockBufferMgr findBufferClockPolicy
+    INFO: Removed block: [file dept.tbl, block 0] from buffer
+    Sep 25, 2015 3:30:00 PM simpledb.buffer.ClockBufferMgr chooseUnpinnedBuffer
+    INFO: Time elapsed: 345158 ns
+
+    Buffer Contents:
+    [file fldcat.tbl, block 2]: Number: 2, Pin: false, Reference bit: true
+    [file fldcat.tbl, block 3]: Number: 3, Pin: false, Reference bit: true
+    [file fldcat.tbl, block 0]: Number: 0, Pin: false, Reference bit: true
+    [file fldcat.tbl, block 1]: Number: 1, Pin: false, Reference bit: true
+    [file tblcat.tbl, block 0]: Number: 0, Pin: false, Reference bit: true
+    [file fldcat.tbl, block 4]: Number: 4, Pin: false, Reference bit: true
+    [file viewcat.tbl, block 0]: Number: 0, Pin: false, Reference bit: true
+    [file course.tbl, block 0]: Number: 0, Pin: false, Reference bit: false
+
+    In this case, dept.tbl was replaced with course.tbl in block 0. The clock head was at dept.tbl, block 0. When searching, it checked the reference bit of the buffer at the clock head, which happened to be false, so that buffer was chosen to be replaced with course.tbl.
+
+
+SQL Output comparison:
+This is showing that no data is lost when creating or querying the database.
+If the SQL output is consistent between the 3 implementations, then they are correct.
+We are assuming that BasicBufferMgr will always produce the correct output.
+The SQL output is identical between our replacement policies and the basic one.
+
+Basic:
+    "select Cid, title from course"
+                   title   cid
+    --------------------------
+              db systems    12
+               compilers    22
+                calculus    32
+                 algebra    42
+                  acting    52
+               elocution    62
+
+    "select Sid, Sname from student where gradyear = 2005 and sname = 'sue'"
+         sname   sid
+    ----------------
+           sue     4
+
+    "insert into student(sid, sname, majorid, gradyear) values (1, 'test', 10, 2016)"
+    1 records processed
+
+    "select Sid, Sname from student where gradyear = 2016 and majorid = 10"
+         sname   sid
+    ----------------
+          test     1
+
+LRU:
+    "select Cid, title from course"
+                   title   cid
+    --------------------------
+              db systems    12
+               compilers    22
+                calculus    32
+                 algebra    42
+                  acting    52
+               elocution    62
+
+    "select Sid, Sname from student where gradyear = 2005 and sname = 'sue'"
+         sname   sid
+    ----------------
+           sue     4
+
+    "insert into student(sid, sname, majorid, gradyear) values (1, 'test', 10, 2016)"
+    1 records processed
+
+    "select Sid, Sname from student where gradyear = 2016 and majorid = 10"
+         sname   sid
+    ----------------
+          test     1
+
+Clock:
+    "select Cid, title from course"
+                   title   cid
+    --------------------------
+              db systems    12
+               compilers    22
+                calculus    32
+                 algebra    42
+                  acting    52
+               elocution    62
+
+    "select Sid, Sname from student where gradyear = 2005 and sname = 'sue'"
+         sname   sid
+    ----------------
+           sue     4
+
+    "insert into student(sid, sname, majorid, gradyear) values (1, 'test', 10, 2016)"
+    1 records processed
+
+    "select Sid, Sname from student where gradyear = 2016 and majorid = 10"
+         sname   sid
+    ----------------
+          test     1

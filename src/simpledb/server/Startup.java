@@ -31,6 +31,7 @@ public class Startup {
 			}
 		}
 
+
 		// configure and initialize the database
 		SimpleDB.init(args[0], bufferManager);
 

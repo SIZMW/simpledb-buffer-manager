@@ -1,0 +1,582 @@
+Basic buffer manager
+
+"create table STUDENT(SId int, SName varchar(10), MajorId int, GradYear int)"
+0 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (1, 'joe', 10, 2004)"
+1 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (2, 'amy', 20, 2004)"
+1 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (3, 'max', 10, 2005)"
+1 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (4, 'sue', 20, 2005)"
+1 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (5, 'bob', 30, 2003)"
+1 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (6, 'kim', 20, 2001)"
+1 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (7, 'art', 30, 2004)"
+1 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (8, 'pat', 20, 2001)"
+1 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (9, 'lee', 10, 2004)"
+1 records processed
+
+"create table DEPT(DId int, DName varchar(8))"
+0 records processed
+
+"insert into DEPT(DId, DName) values (10, 'compsci')"
+1 records processed
+
+"insert into DEPT(DId, DName) values (20, 'math')"
+1 records processed
+
+"insert into DEPT(DId, DName) values (30, 'drama')"
+1 records processed
+
+"create table COURSE(CId int, Title varchar(20), DeptId int)"
+0 records processed
+
+"insert into COURSE(CId, Title, DeptId) values (12, 'db systems', 10)"
+1 records processed
+
+"insert into COURSE(CId, Title, DeptId) values (22, 'compilers', 10)"
+1 records processed
+
+"insert into COURSE(CId, Title, DeptId) values (32, 'calculus', 20)"
+1 records processed
+
+"insert into COURSE(CId, Title, DeptId) values (42, 'algebra', 20)"
+1 records processed
+
+"insert into COURSE(CId, Title, DeptId) values (52, 'acting', 30)"
+1 records processed
+
+"insert into COURSE(CId, Title, DeptId) values (62, 'elocution', 30)"
+1 records processed
+
+"create table SECTION(SectId int, CourseId int, Prof varchar(8), YearOffered int)"
+0 records processed
+
+"insert into SECTION(SectId, CourseId, Prof, YearOffered) values (13, 12, 'turing', 2004)"
+1 records processed
+
+"insert into SECTION(SectId, CourseId, Prof, YearOffered) values (23, 12, 'turing', 2005)"
+1 records processed
+
+"insert into SECTION(SectId, CourseId, Prof, YearOffered) values (33, 32, 'newton', 2000)"
+1 records processed
+
+"insert into SECTION(SectId, CourseId, Prof, YearOffered) values (43, 32, 'einstein', 2001)"
+1 records processed
+
+"insert into SECTION(SectId, CourseId, Prof, YearOffered) values (53, 62, 'brando', 2001)"
+1 records processed
+
+"create table ENROLL(EId int, StudentId int, SectionId int, Grade varchar(2))"
+0 records processed
+
+"insert into ENROLL(EId, StudentId, SectionId, Grade) values (14, 1, 13, 'A')"
+1 records processed
+
+"insert into ENROLL(EId, StudentId, SectionId, Grade) values (24, 1, 43, 'C' )"
+1 records processed
+
+"insert into ENROLL(EId, StudentId, SectionId, Grade) values (34, 2, 43, 'B+')"
+1 records processed
+
+"insert into ENROLL(EId, StudentId, SectionId, Grade) values (44, 4, 33, 'B' )"
+1 records processed
+
+"insert into ENROLL(EId, StudentId, SectionId, Grade) values (54, 4, 53, 'A' )"
+1 records processed
+
+"insert into ENROLL(EId, StudentId, SectionId, Grade) values (64, 6, 53, 'A' )"
+1 records processed
+
+"select Sid, Sname, MajorId, GradYear from student"
+majoridgradyear     sname   sid
+----------------------------
+    10  2004       joe     1
+    20  2004       amy     2
+    10  2005       max     3
+    20  2005       sue     4
+    30  2003       bob     5
+    20  2001       kim     6
+    30  2004       art     7
+    20  2001       pat     8
+    10  2004       lee     9
+
+"select DId, DName from dept"
+   dname   did
+--------------
+ compsci    10
+    math    20
+   drama    30
+
+"select CId, Title, DeptId from course"
+deptid               title   cid
+--------------------------------
+    10          db systems    12
+    10           compilers    22
+    20            calculus    32
+    20             algebra    42
+    30              acting    52
+    30           elocution    62
+
+"select SectId, CourseId, Prof, YearOffered from section"
+sectidyearofferedcourseid    prof
+--------------------------
+    13  2004    12  turing
+    23  2005    12  turing
+    33  2000    32  newton
+    43  2001    32einstein
+    53  2001    62  brando
+
+"select EId, StudentId, SectionId, Grade from enroll"
+studentid   eidgradesectionid
+--------------------
+     1    14 A    13
+     1    24 C    43
+     2    34B+    43
+     4    44 B    33
+     4    54 A    53
+     6    64 A    53
+
+"select Sid, Sname from student where sid = 3 and majorid = 10"
+     sname   sid
+----------------
+       max     3
+
+"select Sid, Sname from student where majorid = 10"
+     sname   sid
+----------------
+       joe     1
+       max     3
+       lee     9
+
+"select DId, DName from dept where Did = 10"
+   dname   did
+--------------
+ compsci    10
+
+"select Cid, title from course"
+               title   cid
+--------------------------
+          db systems    12
+           compilers    22
+            calculus    32
+             algebra    42
+              acting    52
+           elocution    62
+
+"select Sid, Sname from student where gradyear = 2005 and sname = 'sue'"
+     sname   sid
+----------------
+       sue     4
+
+"insert into student(sid, sname, majorid, gradyear) values (1, 'test', 10, 2016)"
+1 records processed
+
+"select Sid, Sname from student where gradyear = 2016 and majorid = 10"
+     sname   sid
+----------------
+      test     1
+Total Time elapsed: 920.361 ms
+
+LRU buffer manager
+
+"create table STUDENT(SId int, SName varchar(10), MajorId int, GradYear int)"
+0 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (1, 'joe', 10, 2004)"
+1 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (2, 'amy', 20, 2004)"
+1 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (3, 'max', 10, 2005)"
+1 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (4, 'sue', 20, 2005)"
+1 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (5, 'bob', 30, 2003)"
+1 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (6, 'kim', 20, 2001)"
+1 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (7, 'art', 30, 2004)"
+1 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (8, 'pat', 20, 2001)"
+1 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (9, 'lee', 10, 2004)"
+1 records processed
+
+"create table DEPT(DId int, DName varchar(8))"
+0 records processed
+
+"insert into DEPT(DId, DName) values (10, 'compsci')"
+1 records processed
+
+"insert into DEPT(DId, DName) values (20, 'math')"
+1 records processed
+
+"insert into DEPT(DId, DName) values (30, 'drama')"
+1 records processed
+
+"create table COURSE(CId int, Title varchar(20), DeptId int)"
+0 records processed
+
+"insert into COURSE(CId, Title, DeptId) values (12, 'db systems', 10)"
+1 records processed
+
+"insert into COURSE(CId, Title, DeptId) values (22, 'compilers', 10)"
+1 records processed
+
+"insert into COURSE(CId, Title, DeptId) values (32, 'calculus', 20)"
+1 records processed
+
+"insert into COURSE(CId, Title, DeptId) values (42, 'algebra', 20)"
+1 records processed
+
+"insert into COURSE(CId, Title, DeptId) values (52, 'acting', 30)"
+1 records processed
+
+"insert into COURSE(CId, Title, DeptId) values (62, 'elocution', 30)"
+1 records processed
+
+"create table SECTION(SectId int, CourseId int, Prof varchar(8), YearOffered int)"
+0 records processed
+
+"insert into SECTION(SectId, CourseId, Prof, YearOffered) values (13, 12, 'turing', 2004)"
+1 records processed
+
+"insert into SECTION(SectId, CourseId, Prof, YearOffered) values (23, 12, 'turing', 2005)"
+1 records processed
+
+"insert into SECTION(SectId, CourseId, Prof, YearOffered) values (33, 32, 'newton', 2000)"
+1 records processed
+
+"insert into SECTION(SectId, CourseId, Prof, YearOffered) values (43, 32, 'einstein', 2001)"
+1 records processed
+
+"insert into SECTION(SectId, CourseId, Prof, YearOffered) values (53, 62, 'brando', 2001)"
+1 records processed
+
+"create table ENROLL(EId int, StudentId int, SectionId int, Grade varchar(2))"
+0 records processed
+
+"insert into ENROLL(EId, StudentId, SectionId, Grade) values (14, 1, 13, 'A')"
+1 records processed
+
+"insert into ENROLL(EId, StudentId, SectionId, Grade) values (24, 1, 43, 'C' )"
+1 records processed
+
+"insert into ENROLL(EId, StudentId, SectionId, Grade) values (34, 2, 43, 'B+')"
+1 records processed
+
+"insert into ENROLL(EId, StudentId, SectionId, Grade) values (44, 4, 33, 'B' )"
+1 records processed
+
+"insert into ENROLL(EId, StudentId, SectionId, Grade) values (54, 4, 53, 'A' )"
+1 records processed
+
+"insert into ENROLL(EId, StudentId, SectionId, Grade) values (64, 6, 53, 'A' )"
+1 records processed
+
+"select Sid, Sname, MajorId, GradYear from student"
+majoridgradyear     sname   sid
+----------------------------
+    10  2004       joe     1
+    20  2004       amy     2
+    10  2005       max     3
+    20  2005       sue     4
+    30  2003       bob     5
+    20  2001       kim     6
+    30  2004       art     7
+    20  2001       pat     8
+    10  2004       lee     9
+
+"select DId, DName from dept"
+   dname   did
+--------------
+ compsci    10
+    math    20
+   drama    30
+
+"select CId, Title, DeptId from course"
+deptid               title   cid
+--------------------------------
+    10          db systems    12
+    10           compilers    22
+    20            calculus    32
+    20             algebra    42
+    30              acting    52
+    30           elocution    62
+
+"select SectId, CourseId, Prof, YearOffered from section"
+sectidyearofferedcourseid    prof
+--------------------------
+    13  2004    12  turing
+    23  2005    12  turing
+    33  2000    32  newton
+    43  2001    32einstein
+    53  2001    62  brando
+
+"select EId, StudentId, SectionId, Grade from enroll"
+studentid   eidgradesectionid
+--------------------
+     1    14 A    13
+     1    24 C    43
+     2    34B+    43
+     4    44 B    33
+     4    54 A    53
+     6    64 A    53
+
+"select Sid, Sname from student where sid = 3 and majorid = 10"
+     sname   sid
+----------------
+       max     3
+
+"select Sid, Sname from student where majorid = 10"
+     sname   sid
+----------------
+       joe     1
+       max     3
+       lee     9
+
+"select DId, DName from dept where Did = 10"
+   dname   did
+--------------
+ compsci    10
+
+"select Cid, title from course"
+               title   cid
+--------------------------
+          db systems    12
+           compilers    22
+            calculus    32
+             algebra    42
+              acting    52
+           elocution    62
+
+"select Sid, Sname from student where gradyear = 2005 and sname = 'sue'"
+     sname   sid
+----------------
+       sue     4
+
+"insert into student(sid, sname, majorid, gradyear) values (1, 'test', 10, 2016)"
+1 records processed
+
+"select Sid, Sname from student where gradyear = 2016 and majorid = 10"
+     sname   sid
+----------------
+      test     1
+Total Time elapsed: 1188.055 ms
+
+Clock buffer manager
+
+"create table STUDENT(SId int, SName varchar(10), MajorId int, GradYear int)"
+0 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (1, 'joe', 10, 2004)"
+1 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (2, 'amy', 20, 2004)"
+1 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (3, 'max', 10, 2005)"
+1 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (4, 'sue', 20, 2005)"
+1 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (5, 'bob', 30, 2003)"
+1 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (6, 'kim', 20, 2001)"
+1 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (7, 'art', 30, 2004)"
+1 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (8, 'pat', 20, 2001)"
+1 records processed
+
+"insert into STUDENT(SId, SName, MajorId, GradYear) values (9, 'lee', 10, 2004)"
+1 records processed
+
+"create table DEPT(DId int, DName varchar(8))"
+0 records processed
+
+"insert into DEPT(DId, DName) values (10, 'compsci')"
+1 records processed
+
+"insert into DEPT(DId, DName) values (20, 'math')"
+1 records processed
+
+"insert into DEPT(DId, DName) values (30, 'drama')"
+1 records processed
+
+"create table COURSE(CId int, Title varchar(20), DeptId int)"
+0 records processed
+
+"insert into COURSE(CId, Title, DeptId) values (12, 'db systems', 10)"
+1 records processed
+
+"insert into COURSE(CId, Title, DeptId) values (22, 'compilers', 10)"
+1 records processed
+
+"insert into COURSE(CId, Title, DeptId) values (32, 'calculus', 20)"
+1 records processed
+
+"insert into COURSE(CId, Title, DeptId) values (42, 'algebra', 20)"
+1 records processed
+
+"insert into COURSE(CId, Title, DeptId) values (52, 'acting', 30)"
+1 records processed
+
+"insert into COURSE(CId, Title, DeptId) values (62, 'elocution', 30)"
+1 records processed
+
+"create table SECTION(SectId int, CourseId int, Prof varchar(8), YearOffered int)"
+0 records processed
+
+"insert into SECTION(SectId, CourseId, Prof, YearOffered) values (13, 12, 'turing', 2004)"
+1 records processed
+
+"insert into SECTION(SectId, CourseId, Prof, YearOffered) values (23, 12, 'turing', 2005)"
+1 records processed
+
+"insert into SECTION(SectId, CourseId, Prof, YearOffered) values (33, 32, 'newton', 2000)"
+1 records processed
+
+"insert into SECTION(SectId, CourseId, Prof, YearOffered) values (43, 32, 'einstein', 2001)"
+1 records processed
+
+"insert into SECTION(SectId, CourseId, Prof, YearOffered) values (53, 62, 'brando', 2001)"
+1 records processed
+
+"create table ENROLL(EId int, StudentId int, SectionId int, Grade varchar(2))"
+0 records processed
+
+"insert into ENROLL(EId, StudentId, SectionId, Grade) values (14, 1, 13, 'A')"
+1 records processed
+
+"insert into ENROLL(EId, StudentId, SectionId, Grade) values (24, 1, 43, 'C' )"
+1 records processed
+
+"insert into ENROLL(EId, StudentId, SectionId, Grade) values (34, 2, 43, 'B+')"
+1 records processed
+
+"insert into ENROLL(EId, StudentId, SectionId, Grade) values (44, 4, 33, 'B' )"
+1 records processed
+
+"insert into ENROLL(EId, StudentId, SectionId, Grade) values (54, 4, 53, 'A' )"
+1 records processed
+
+"insert into ENROLL(EId, StudentId, SectionId, Grade) values (64, 6, 53, 'A' )"
+1 records processed
+
+"select Sid, Sname, MajorId, GradYear from student"
+majoridgradyear     sname   sid
+----------------------------
+    10  2004       joe     1
+    20  2004       amy     2
+    10  2005       max     3
+    20  2005       sue     4
+    30  2003       bob     5
+    20  2001       kim     6
+    30  2004       art     7
+    20  2001       pat     8
+    10  2004       lee     9
+
+"select DId, DName from dept"
+   dname   did
+--------------
+ compsci    10
+    math    20
+   drama    30
+
+"select CId, Title, DeptId from course"
+deptid               title   cid
+--------------------------------
+    10          db systems    12
+    10           compilers    22
+    20            calculus    32
+    20             algebra    42
+    30              acting    52
+    30           elocution    62
+
+"select SectId, CourseId, Prof, YearOffered from section"
+sectidyearofferedcourseid    prof
+--------------------------
+    13  2004    12  turing
+    23  2005    12  turing
+    33  2000    32  newton
+    43  2001    32einstein
+    53  2001    62  brando
+
+"select EId, StudentId, SectionId, Grade from enroll"
+studentid   eidgradesectionid
+--------------------
+     1    14 A    13
+     1    24 C    43
+     2    34B+    43
+     4    44 B    33
+     4    54 A    53
+     6    64 A    53
+
+"select Sid, Sname from student where sid = 3 and majorid = 10"
+     sname   sid
+----------------
+       max     3
+
+"select Sid, Sname from student where majorid = 10"
+     sname   sid
+----------------
+       joe     1
+       max     3
+       lee     9
+
+"select DId, DName from dept where Did = 10"
+   dname   did
+--------------
+ compsci    10
+
+"select Cid, title from course"
+               title   cid
+--------------------------
+          db systems    12
+           compilers    22
+            calculus    32
+             algebra    42
+              acting    52
+           elocution    62
+
+"select Sid, Sname from student where gradyear = 2005 and sname = 'sue'"
+     sname   sid
+----------------
+       sue     4
+
+"insert into student(sid, sname, majorid, gradyear) values (1, 'test', 10, 2016)"
+1 records processed
+
+"select Sid, Sname from student where gradyear = 2016 and majorid = 10"
+     sname   sid
+----------------
+      test     1
+Total Time elapsed: 1193.909 ms
+

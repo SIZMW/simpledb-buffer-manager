@@ -43,7 +43,7 @@ public class ExecuteSimpleDBSQL {
 			ResultSetMetaData md = rs.getMetaData();
 			int numcols = md.getColumnCount();
 			int totalwidth = 0;
-
+			
 			// Print header
 			for (int i = 1; i <= numcols; i++) {
 				int width = md.getColumnDisplaySize(i);
@@ -56,7 +56,7 @@ public class ExecuteSimpleDBSQL {
 				System.out.print("-");
 			}
 			System.out.println();
-
+			
 			// Print records
 			while (rs.next()) {
 				for (int i = 1; i <= numcols; i++) {
@@ -119,18 +119,29 @@ public class ExecuteSimpleDBSQL {
 
 			String line = br.readLine();
 
+			long totalStartTime = System.nanoTime();
 			while (line != null) {
 				line = line.trim();
 
 				// Process one line of input
-				System.out.println("\n" + "\"" + line + "\"");
 				if (line.startsWith("select")) {
+					System.out.println("\n" + "\"" + line + "\"");
+					//long startTime = System.nanoTime();
 					doQuery(line);
+					//long endTime = System.nanoTime();
+					//System.out.println(String.format("Time elapsed: %.3f ms", ((float)(endTime - startTime))/1000000.0));
 				} else if (line.startsWith("insert") || line.startsWith("create")) {
+					System.out.println("\n" + "\"" + line + "\"");
+					//long startTime = System.nanoTime();
 					doUpdate(line);
+					//long endTime = System.nanoTime();
+					//System.out.println(String.format("Time elapsed: %.3f ms", ((float)(endTime - startTime))/1000000.0));
 				}
 				line = br.readLine();
 			}
+
+			long totalEndTime = System.nanoTime();
+			System.out.println(String.format("Total Time elapsed: %.3f ms\n", ((float)(totalEndTime - totalStartTime))/1000000.0));
 			br.close();
 		} catch (Exception e) {
 			e.printStackTrace();

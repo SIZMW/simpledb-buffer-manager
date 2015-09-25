@@ -1,4 +1,8 @@
-/* Initial database setup */
+/* 
+ * Initial database setup 
+ *
+ * Literally copied from CreateStudentDB provided with simpledb
+ */
 
 create table STUDENT(SId int, SName varchar(10), MajorId int, GradYear int)
 
@@ -50,15 +54,38 @@ insert into ENROLL(EId, StudentId, SectionId, Grade) values (64, 6, 53, 'A' )
  * These statements are tested using the same setup as above, so modifications before and after are tested to see if the same output is produced.
  */
 
+
+/*
+ * Ensures that the correct data is in each table
+ * The data returned should match the inserts executed above.
+ */
+
 select Sid, Sname, MajorId, GradYear from student
 select DId, DName from dept
 select CId, Title, DeptId from course
 select SectId, CourseId, Prof, YearOffered from section
 select EId, StudentId, SectionId, Grade from enroll
+
+/*
+ * Check that conditionals work
+ */
+
 select Sid, Sname from student where sid = 3 and majorid = 10
 select Sid, Sname from student where majorid = 10
 select DId, DName from dept where Did = 10
+
+/*
+ * For testing queries on course
+ */
 select Cid, title from course
+
+/*
+ * Additional conditional testing
+ */
 select Sid, Sname from student where gradyear = 2005 and sname = 'sue'
+
+/*
+ * Testing an insertion
+ */
 insert into student(sid, sname, majorid, gradyear) values (1, 'test', 10, 2016)
 select Sid, Sname from student where gradyear = 2016 and majorid = 10

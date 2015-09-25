@@ -31,7 +31,9 @@ public class SimpleDB {
 	public static int BUFFER_SIZE = 8;
 
 	public static String LOG_FILE = "simpledb.log";
-	public static String CS4431_LOGS = "cs4432.log";
+	public static String CS4431_BASIC_LOG = "cs4432_basic.log";
+	public static String CS4431_LRU_LOG = "cs4432_lru.log";
+	public static String CS4431_CLOCK_LOG = "cs4432_clock.log";
 
 	private static FileMgr fm;
 	private static BufferMgr bm;
@@ -92,20 +94,22 @@ public class SimpleDB {
 	 * @param dirname
 	 *            the name of the database directory
 	 */
-	public static void initFileAndLogMgr(String dirname) {
+	public static void initFileAndLogMgr(String dirname, String log_name) {
 		initFileMgr(dirname);
 		logm = new LogMgr(LOG_FILE);
 
 		// CS 4432 Project 1
 		// Added our own log file logging handlers
 		try {
-			FileHandler logFileHandler = new FileHandler(CS4431_LOGS);
+			FileHandler logFileHandler = new FileHandler(log_name);
 			logFileHandler.setLevel(Level.ALL);
 
 			SimpleFormatter simpleFormatter = new SimpleFormatter();
 			logFileHandler.setFormatter(simpleFormatter);
 
 			logger = Logger.getGlobal();
+			logger.setUseParentHandlers(false);
+
 			logger.addHandler(logFileHandler);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -119,7 +123,18 @@ public class SimpleDB {
 	 *            the name of the database directory
 	 */
 	public static void initFileLogAndBufferMgr(String dirname, int bufferSelect) {
-		initFileAndLogMgr(dirname);
+		String log_name = CS4431_BASIC_LOG;
+		switch (bufferSelect) {
+			case 1:
+			log_name = CS4431_CLOCK_LOG;
+			break;
+			case 2:
+			log_name = CS4431_LRU_LOG;
+			break;
+			default:
+			break;
+		}
+		initFileAndLogMgr(dirname, log_name);
 		bm = new BufferMgr(BUFFER_SIZE, bufferSelect);
 	}
 

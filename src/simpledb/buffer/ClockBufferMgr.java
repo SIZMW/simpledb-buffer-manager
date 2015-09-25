@@ -55,17 +55,18 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 	@Override
 	protected Buffer chooseUnpinnedBuffer() {
 		printBufferContents();
+		long startTime = System.nanoTime();
+		long endTime;
 		if (numAvailable > 0) {
+			endTime = System.nanoTime();
+			SimpleDB.getLogger().log(Level.INFO, "Time elapsed: " + (endTime - startTime) + " ns");
 			return new ClockBuffer();
 		}
 
-		long startTime = System.nanoTime();
-		SimpleDB.getLogger().log(Level.INFO, "Start time: " + startTime + " ns");
 
 		Buffer ret = findBufferClockPolicy();
 
-		long endTime = System.nanoTime();
-		SimpleDB.getLogger().log(Level.INFO, "End time: " + endTime + " ns");
+		endTime = System.nanoTime();
 		SimpleDB.getLogger().log(Level.INFO, "Time elapsed: " + (endTime - startTime) + " ns");
 
 		return ret;
@@ -90,7 +91,7 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 
 		// Run at least the partial pass from clockHeadPosition to the end of
 		// the buffer list, and then repeat from the start of the buffer list.
-		for (int j = 0; j < 2; j++) {
+		for (int j = 0; j < 3; j++) {
 			while (iterator.hasNext()) {
 				Block blk = iterator.next();
 
@@ -121,10 +122,15 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 	 */
 	@Override
 	protected Buffer findExistingBuffer(Block blk) {
+		long startTime = System.nanoTime();
+
 		ClockBuffer buff = buffer.get(blk);
 		if (buff != null) {
 			buff.setRefBit(true);
 		}
+
+		long endTime = System.nanoTime();
+		SimpleDB.getLogger().log(Level.INFO, "Time elapsed: " + (endTime - startTime) + " ns");
 
 		return buff;
 	}
@@ -216,7 +222,7 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 			output += blk + ": " + buffer.get(blk) + "\n";
 		}
 
-		SimpleDB.getLogger().log(Level.INFO, "\n\nBuffer Contents:\n" + output);
+		SimpleDB.getLogger().log(Level.INFO, "\n\nBuffer Contents:\n" + output + "\n Clock head location: " + clockHeadPosition);
 	}
 
 	/*
