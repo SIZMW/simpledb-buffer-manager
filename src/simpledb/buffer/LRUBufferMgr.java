@@ -60,14 +60,14 @@ public class LRUBufferMgr extends AbstractBufferMgr {
 			return new LRUBuffer();
 		}
 
-		long startTime = System.currentTimeMillis();
-		SimpleDB.getLogger().log(Level.INFO, "Start time: " + startTime);
+		long startTime = System.nanoTime();
+		SimpleDB.getLogger().log(Level.INFO, "Start time: " + startTime + " ns");
 
 		Buffer ret = findLeastRecentlyUsed();
 
-		long endTime = System.currentTimeMillis();
-		SimpleDB.getLogger().log(Level.INFO, "End time: " + endTime);
-		SimpleDB.getLogger().log(Level.INFO, "Time elapsed: " + (endTime - startTime) + " ms");
+		long endTime = System.nanoTime();
+		SimpleDB.getLogger().log(Level.INFO, "End time: " + endTime + " ns");
+		SimpleDB.getLogger().log(Level.INFO, "Time elapsed: " + (endTime - startTime) + " ns");
 
 		return ret;
 	}

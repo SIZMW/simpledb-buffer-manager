@@ -4,3 +4,5 @@ Authors:
 * Aditya Nivarthi (anivarthi)
 * Lambert Wang (lwang5)
 
+Running the code from command
+
