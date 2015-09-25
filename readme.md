@@ -14,21 +14,18 @@ Notes:
 * Newly created class files have the tag at the top of the class only.
 
 Source Files Created:
-* AbstractBufferManager.java
-* LRUBufferManager.java
-* ClockBufferManager.java
-* LRUBuffer.java
-* ClockBuffer.java
-* ExecuteSimpleDBSQL.java
+* simpledb/buffer/AbstractBufferManager.java
+* simpledb/buffer/LRUBufferManager.java
+* simpledb/buffer/ClockBufferManager.java
+* simpledb/buffer/LRUBuffer.java
+* simpledb/buffer/ClockBuffer.java
+* sqlclient/main/ExecuteSimpleDBSQL.java
 
 Source Files Modified:
-* BasicBufferMgr.java
-* Buffer.java
-* SimpleDB.java
-* Startup.java
-
-SQL Queries Created:
-* test.sql
+* simpledb/buffer/BasicBufferMgr.java
+* simpledb/buffer/Buffer.java
+* simpledb/server/SimpleDB.java
+* simpledb/server/Startup.java
 
 Usage (Eclipse Project):
 * Extract the zip file to get the project folder.
@@ -52,3 +49,52 @@ where `<FILE_PATH_TO_PROJECT>` is the full path to where the zip file project wa
 
 Usage (Command Line):
 * Extract the zip file to get the project folder.
+* Compile the simplebd/server/Startup.java
+  * For example, call the following commands:
+  ```
+  $ cd simpledb/server
+  $ javac Startup.java
+  ```
+* To run 'StartUp.class' with the proper arguments
+  * For example, call the following commands from the outside directory containing /simpledb:
+  ```
+  $ java simpledb.server.Startup {-lru|-clock}  
+  ```  
+  
+Running examples.sql on the database:
+* Compile sqlclient/main/ExecuteSimpleDBSQL.java
+  * For example, call the following commands:
+  ```
+  $ cd sqlclient/main
+  $ javac ExecuteSimpleDBSQL.java
+  ```
+* Run ExecuteSimpleDBSQL with examples.sql
+  * From the same directory, call the following command:
+  ```
+  $ java ExecuteSimpleDBSQL {path to examples.sql}
+  ```
+
+
+Directory:
+* readme.md  
+The file you are reading. Contains information about the project.
+* bugs.txt  
+A list of known bugs and issues with our implementation.
+* testing.txt  
+Documentation of the testing we did on our database
+* design.txt  
+A file containing the design description of out buffer manager.
+* examples.sql  
+A sql that we ran on our databse for testing creation and querying our database.
+* ExtendedSimpleDB.zip  
+Standalone source code for our extension of simpleDB
+  * simpledb\  
+  Contains the packages for simpledb
+    * buffer\  
+    Location of our extended code
+    * server\  
+    Location of our extended code
+  * sqlclient\  
+  A client program we used to query our database
+    * main\  
+    Location containing the sql client.
