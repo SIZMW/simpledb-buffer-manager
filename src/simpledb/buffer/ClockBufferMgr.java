@@ -165,10 +165,11 @@ public class ClockBufferMgr extends AbstractBufferMgr {
 			if (clockHeadPosition == null) {
 				clockHeadPosition = blk;
 			}
-		}
-		if (!buff.isPinned()) {
-			numAvailable--;
-			numAvailable = (numAvailable < 0) ? 0 : numAvailable;
+
+			if (!buff.isPinned()) {
+				numAvailable--;
+				numAvailable = (numAvailable < 0) ? 0 : numAvailable;
+			}
 		}
 
 		SimpleDB.getLogger().log(Level.INFO, "Number available: " + numAvailable);

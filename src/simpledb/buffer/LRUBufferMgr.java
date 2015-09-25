@@ -156,11 +156,11 @@ public class LRUBufferMgr extends AbstractBufferMgr {
 			}
 			buff.assignToBlock(blk);
 			buffer.put(blk, (LRUBuffer) buff);
-		}
 
-		if (!buff.isPinned()) {
-			numAvailable--;
-			numAvailable = (numAvailable < 0) ? 0 : numAvailable;
+			if (!buff.isPinned()) {
+				numAvailable--;
+				numAvailable = (numAvailable < 0) ? 0 : numAvailable;
+			}
 		}
 
 		SimpleDB.getLogger().log(Level.INFO, "Number available: " + numAvailable);
@@ -186,6 +186,7 @@ public class LRUBufferMgr extends AbstractBufferMgr {
 		}
 
 		buff.assignToNew(filename, fmtr);
+		SimpleDB.getLogger().log(Level.INFO, "Pinned new block: " + buff.block());
 		buffer.put(buff.block(), (LRUBuffer) buff);
 
 		numAvailable--;
@@ -196,6 +197,7 @@ public class LRUBufferMgr extends AbstractBufferMgr {
 
 		((LRUBuffer) buff).setLeastRecentlyUsedTimeMillis();
 
+		SimpleDB.getLogger().log(Level.INFO, "New block: " + buff);
 		return buff;
 	}
 
