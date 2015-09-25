@@ -26,7 +26,7 @@ Source Files Modified:
 * SimpleDB.java
 * Startup.java
 
-Usage:
+Usage (Eclipse Project):
 * Extract the zip file to get the project folder.
 * Import this project folder into Eclipse.
 
@@ -45,3 +45,6 @@ cs4432db -lru
 "<FILE_PATH_TO_PROJECT>/src/sql_client/src/test/sql_queries/test.sql"
 ```
 where `<FILE_PATH_TO_PROJECT>` is the full path to where the zip file project was extracted.
+
+Usage (Command Line):
+* Extract the zip file to get the project folder.
